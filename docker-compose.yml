@@ -1,0 +1,169 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  auth:
+    build:
+      context: ./backend/services/auth
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - JWT_SECRET=dev-secret-change-in-production
+      - JWT_EXPIRES_MINUTES=120
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  payments:
+    build:
+      context: ./backend/services/payments
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  staking:
+    build:
+      context: ./backend/services/staking
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  gpu:
+    build:
+      context: ./backend/services/gpu
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  inference:
+    build:
+      context: ./backend/services/inference
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+      - BSC_RPC_URL=https://bsc-dataseed.binance.org/
+      - SKIP_PAYMENT_VALIDATION=true
+      - TREASURY_WALLET=treasury
+      - STAKER_POOL_WALLET=staker_pool
+    depends_on:
+      - redis
+      - payments
+      - gpu
+
+  inference-worker:
+    build:
+      context: ./backend/services/inference_worker
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+      - inference
+
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      - auth
+      - payments
+      - staking
+      - inference
+      - gpu
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  gaming:
+    build:
+      context: ./backend/services/gaming
+      dockerfile: Dockerfile
+    ports:
+      - "8006:8000"
+    depends_on:
+      - redis
+
+  desci:
+    build:
+      context: ./backend/services/desci
+      dockerfile: Dockerfile
+    ports:
+      - "8007:8000"
+    depends_on:
+      - redis
+
+  gamed:
+    build:
+      context: ./backend/services/gamed
+      dockerfile: Dockerfile
+    ports:
+      - "8008:8000"
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8080
+    depends_on:
+      - api-gateway
+
+volumes:
+  redis-data:

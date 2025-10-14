@@ -1,0 +1,33 @@
+Frontend:
+  TargetCapacity: 4
+  MinCapacity: 2
+  MaxCapacity: 20
+  ScaleUpCooldown: 60
+  ScaleDownCooldown: 300
+  Metrics:
+    - Type: TargetTrackingScaling
+      TargetValue: 70
+      PredefinedMetricType: ECSServiceAverageCPUUtilization
+    - Type: TargetTrackingScaling
+      TargetValue: 80
+      PredefinedMetricType: ECSServiceAverageMemoryUtilization
+
+APIServices:
+  TargetCapacity: 6
+  MinCapacity: 3
+  MaxCapacity: 30
+  Metrics:
+    - RequestCountPerTarget: 1000
+    - ResponseTime: 500ms
+
+GPUNodes:
+  ScalingPolicy: StepScaling
+  Steps:
+    - Condition: NetworkUtilization < 30%
+      Adjustment: Scale down by 2
+    - Condition: NetworkUtilization 30-70%
+      Adjustment: Maintain
+    - Condition: NetworkUtilization > 70%
+      Adjustment: Scale up by 4
+    - Condition: NetworkUtilization > 90%
+      Adjustment: Scale up by 8

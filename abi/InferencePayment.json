@@ -1,0 +1,30 @@
+[
+  {
+    "constant": true,
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "userBalances",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "bytes32", "name": "taskId", "type": "bytes32" },
+      { "internalType": "address", "name": "node", "type": "address" },
+      { "internalType": "uint256", "name": "nodePayment", "type": "uint256" },
+      { "internalType": "uint256", "name": "stakerPayment", "type": "uint256" },
+      { "internalType": "uint256", "name": "treasuryPayment", "type": "uint256" }
+    ],
+    "name": "distributePayment",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

@@ -1,0 +1,1153 @@
+# ECS IAM Roles
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "farlabs-ecs-task-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role_policy" "ecs_task_execution_secrets" {
+  name = "ecs-task-execution-secrets"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "ssm:GetParameters",
+          "kms:Decrypt"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "farlabs-ecs-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "ecs_task_role_policy" {
+  name = "ecs-task-policy"
+  role = aws_iam_role.ecs_task_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "${aws_s3_bucket.model_storage.arn}",
+          "${aws_s3_bucket.model_storage.arn}/*",
+          "${aws_s3_bucket.user_uploads.arn}",
+          "${aws_s3_bucket.user_uploads.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+# CloudWatch Log Groups
+resource "aws_cloudwatch_log_group" "frontend" {
+  name              = "/ecs/farlabs-frontend"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "api_gateway" {
+  name              = "/ecs/farlabs-api-gateway"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "auth" {
+  name              = "/ecs/farlabs-auth"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "payments" {
+  name              = "/ecs/farlabs-payments"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "staking" {
+  name              = "/ecs/farlabs-staking"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "inference" {
+  name              = "/ecs/farlabs-inference"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "inference_worker" {
+  name              = "/ecs/farlabs-inference-worker"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "gpu" {
+  name              = "/ecs/farlabs-gpu"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "websocket" {
+  name              = "/ecs/farlabs-websocket"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "gaming" {
+  name              = "/ecs/farlabs-gaming"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "desci" {
+  name              = "/ecs/farlabs-desci"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "gamed" {
+  name              = "/ecs/farlabs-gamed"
+  retention_in_days = 7
+}
+
+# ECR Repositories
+resource "aws_ecr_repository" "frontend" {
+  name                 = "farlabs-frontend"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "api_gateway" {
+  name                 = "farlabs-api-gateway"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "auth" {
+  name                 = "farlabs-auth"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "payments" {
+  name                 = "farlabs-payments"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "staking" {
+  name                 = "farlabs-staking"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "inference" {
+  name                 = "farlabs-inference"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "inference_worker" {
+  name                 = "farlabs-inference-worker"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "gpu" {
+  name                 = "farlabs-gpu"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "websocket" {
+  name                 = "farlabs-websocket"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "gaming" {
+  name                 = "farlabs-gaming"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "desci" {
+  name                 = "farlabs-desci"
+  image_tag_mutability = "MUTABLE"
+}
+
+resource "aws_ecr_repository" "gamed" {
+  name                 = "farlabs-gamed"
+  image_tag_mutability = "MUTABLE"
+}
+
+# ALB Target Groups
+resource "aws_lb_target_group" "frontend" {
+  name        = "farlabs-frontend-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+
+  health_check {
+    enabled             = true
+    healthy_threshold   = 2
+    interval            = 30
+    matcher             = "200"
+    path                = "/"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
+
+  deregistration_delay = 30
+}
+
+resource "aws_lb_target_group" "api_gateway" {
+  name        = "farlabs-api-tg"
+  port        = 8000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+
+  health_check {
+    enabled             = true
+    healthy_threshold   = 2
+    interval            = 30
+    matcher             = "200"
+    path                = "/healthz"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
+
+  deregistration_delay = 30
+}
+
+# ALB Listeners
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend.arn
+  }
+}
+
+resource "aws_lb_listener_rule" "api" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 100
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api_gateway.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/api/*", "/healthz"]
+    }
+  }
+}
+
+# ECS Task Definitions
+resource "aws_ecs_task_definition" "frontend" {
+  family                   = "farlabs-frontend"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "frontend"
+      image = "${aws_ecr_repository.frontend.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 3000
+          hostPort      = 3000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "NODE_ENV"
+          value = "production"
+        },
+        {
+          name  = "NEXT_PUBLIC_API_URL"
+          value = "https://${aws_lb.main.dns_name}"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.frontend.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "api_gateway" {
+  family                   = "farlabs-api-gateway"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "api-gateway"
+      image = "${aws_ecr_repository.api_gateway.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "JWT_SECRET"
+          value = "REPLACE_WITH_SECRETS_MANAGER"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.api_gateway.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "auth" {
+  family                   = "farlabs-auth"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "auth"
+      image = "${aws_ecr_repository.auth.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "JWT_SECRET"
+          value = "REPLACE_WITH_SECRETS_MANAGER"
+        },
+        {
+          name  = "JWT_EXPIRES_MINUTES"
+          value = "120"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.auth.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "payments" {
+  family                   = "farlabs-payments"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "payments"
+      image = "${aws_ecr_repository.payments.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:6379"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.payments.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "staking" {
+  family                   = "farlabs-staking"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "staking"
+      image = "${aws_ecr_repository.staking.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:6379"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.staking.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "inference" {
+  family                   = "farlabs-inference"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "inference"
+      image = "${aws_ecr_repository.inference.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:6379"
+        },
+        {
+          name  = "JWT_SECRET"
+          value = "REPLACE_WITH_SECRETS_MANAGER"
+        },
+        {
+          name  = "BSC_RPC_URL"
+          value = "https://bsc-dataseed.binance.org/"
+        },
+        {
+          name  = "SKIP_PAYMENT_VALIDATION"
+          value = "false"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.inference.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "inference_worker" {
+  family                   = "farlabs-inference-worker"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "inference-worker"
+      image = "${aws_ecr_repository.inference_worker.repository_url}:latest"
+      environment = [
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:6379"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.inference_worker.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "gpu" {
+  family                   = "farlabs-gpu"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "gpu"
+      image = "${aws_ecr_repository.gpu.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:6379"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.gpu.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "websocket" {
+  family                   = "farlabs-websocket"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "websocket"
+      image = "${aws_ecr_repository.websocket.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8080
+          hostPort      = 8080
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_cluster.redis.cache_nodes[0].address}:6379"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.websocket.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "gaming" {
+  family                   = "farlabs-gaming"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "gaming"
+      image = "${aws_ecr_repository.gaming.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.gaming.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "desci" {
+  family                   = "farlabs-desci"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "desci"
+      image = "${aws_ecr_repository.desci.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.desci.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "gamed" {
+  family                   = "farlabs-gamed"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name  = "gamed"
+      image = "${aws_ecr_repository.gamed.repository_url}:latest"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.gamed.name
+          "awslogs-region"        = var.region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+# ECS Services
+resource "aws_ecs_service" "frontend" {
+  name            = "farlabs-frontend"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.frontend.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.frontend.arn
+    container_name   = "frontend"
+    container_port   = 3000
+  }
+
+  depends_on = [aws_lb_listener.http]
+}
+
+resource "aws_ecs_service" "api_gateway" {
+  name            = "farlabs-api"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.api_gateway.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api_gateway.arn
+    container_name   = "api-gateway"
+    container_port   = 8000
+  }
+
+  depends_on = [aws_lb_listener.http]
+}
+
+resource "aws_ecs_service" "auth" {
+  name            = "farlabs-auth"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.auth.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.auth.arn
+  }
+}
+
+resource "aws_ecs_service" "payments" {
+  name            = "farlabs-payments"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.payments.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.payments.arn
+  }
+}
+
+resource "aws_ecs_service" "staking" {
+  name            = "farlabs-staking"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.staking.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.staking.arn
+  }
+}
+
+resource "aws_ecs_service" "inference" {
+  name            = "farlabs-inference"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.inference.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.inference.arn
+  }
+}
+
+resource "aws_ecs_service" "inference_worker" {
+  name            = "farlabs-inference-worker"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.inference_worker.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "gpu" {
+  name            = "farlabs-gpu"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.gpu.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.gpu.arn
+  }
+}
+
+resource "aws_ecs_service" "websocket" {
+  name            = "farlabs-websocket"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.websocket.arn
+  desired_count   = 2
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.websocket.arn
+  }
+}
+
+resource "aws_ecs_service" "gaming" {
+  name            = "farlabs-gaming"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.gaming.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.gaming.arn
+  }
+}
+
+resource "aws_ecs_service" "desci" {
+  name            = "farlabs-desci"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.desci.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.desci.arn
+  }
+}
+
+resource "aws_ecs_service" "gamed" {
+  name            = "farlabs-gamed"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.gamed.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.private[*].id
+    security_groups  = [aws_security_group.ecs_services.id]
+    assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.gamed.arn
+  }
+}
+
+# Service Discovery
+resource "aws_service_discovery_private_dns_namespace" "main" {
+  name = "internal"
+  vpc  = aws_vpc.main.id
+}
+
+resource "aws_service_discovery_service" "auth" {
+  name = "auth-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "payments" {
+  name = "payments-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "staking" {
+  name = "staking-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "inference" {
+  name = "inference-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "gpu" {
+  name = "gpu-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "websocket" {
+  name = "websocket-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "gaming" {
+  name = "gaming-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "desci" {
+  name = "desci-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "gamed" {
+  name = "gamed-service"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+# NAT Gateway for private subnets
+resource "aws_eip" "nat" {
+  count  = 2
+  domain = "vpc"
+
+  tags = {
+    Name = "farlabs-nat-eip-${count.index}"
+  }
+}
+
+resource "aws_nat_gateway" "main" {
+  count         = 2
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+
+  tags = {
+    Name = "farlabs-nat-${count.index}"
+  }
+
+  depends_on = [aws_internet_gateway.main]
+}
+
+resource "aws_route_table" "private" {
+  count  = 2
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main[count.index].id
+  }
+
+  tags = {
+    Name = "farlabs-private-rt-${count.index}"
+  }
+}
+
+resource "aws_route_table_association" "private" {
+  count          = 2
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private[count.index].id
+}

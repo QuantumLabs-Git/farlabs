@@ -63,14 +63,25 @@ const earnings = [
 
 export default function GpuDownloadPage() {
   const [selectedMethod, setSelectedMethod] = useState('docker');
+  const [selectedWorkerType, setSelectedWorkerType] = useState<'mono' | 'mesh'>('mono');
   const [copiedCommand, setCopiedCommand] = useState(false);
 
-  const dockerCommand = `docker run --gpus all \\
+  const dockerCommandMono = `docker run --gpus all \\
   -e FARLABS_WALLET_ADDRESS=0xYOUR_WALLET \\
   -e FARLABS_API_BASE_URL=http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com \\
   -e FARLABS_AUTH_REFRESH_ENABLED=True \\
   --restart unless-stopped \\
   894059646844.dkr.ecr.us-east-1.amazonaws.com/farlabs-gpu-worker-free:latest`;
+
+  const dockerCommandMesh = `docker run --gpus all \\
+  -e FARLABS_WALLET_ADDRESS=0xYOUR_WALLET \\
+  -e FARLABS_DHT_BOOTSTRAP=/ip4/34.239.181.168/tcp/31337/p2p/QmBootstrapPeer \\
+  -e FARLABS_MODEL_NAME=meta-llama/Llama-2-7b-chat-hf \\
+  -e FARLABS_API_BASE_URL=http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com \\
+  --restart unless-stopped \\
+  894059646844.dkr.ecr.us-east-1.amazonaws.com/farlabs-far-mesh-worker-free:latest`;
+
+  const dockerCommand = selectedWorkerType === 'mono' ? dockerCommandMono : dockerCommandMesh;
 
   const copyCommand = () => {
     navigator.clipboard.writeText(dockerCommand);
@@ -115,6 +126,196 @@ export default function GpuDownloadPage() {
             ))}
           </div>
         </Card>
+      </section>
+
+      {/* Quick Start Guide */}
+      <section className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-semibold text-white">Quick Start</h2>
+          <p className="mt-2 text-sm text-white/60">
+            Get your GPU earning $FAR tokens in less than 5 minutes
+          </p>
+        </div>
+
+        <Card elevated className="space-y-8">
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Step 1 */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/20 text-lg font-semibold text-brand-soft">
+                  1
+                </div>
+                <Download className="h-5 w-5 text-brand-soft" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">Install Docker</h3>
+              <p className="text-sm text-white/60">
+                Download Docker Desktop and install NVIDIA drivers + Container Toolkit
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm">Get Docker</Button>
+                </a>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/20 text-lg font-semibold text-brand-soft">
+                  2
+                </div>
+                <Terminal className="h-5 w-5 text-brand-soft" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">Run One Command</h3>
+              <p className="text-sm text-white/60">
+                Copy the Docker command below, replace your wallet address, and run it
+              </p>
+              <a href="#install">
+                <Button variant="ghost" size="sm">View Command</Button>
+              </a>
+            </div>
+
+            {/* Step 3 */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/20 text-lg font-semibold text-brand-soft">
+                  3
+                </div>
+                <CheckCircle2 className="h-5 w-5 text-brand-soft" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">Start Earning</h3>
+              <p className="text-sm text-white/60">
+                Your GPU will automatically process tasks and stream $FAR rewards to your wallet
+              </p>
+              <Link href="/gpu">
+                <Button variant="ghost" size="sm">View Dashboard</Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Visual Timeline */}
+          <div className="relative">
+            <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-brand" />
+                <span className="text-xs text-white/50">2 min</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-brand" />
+                <span className="text-xs text-white/50">1 min</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-emerald-400" />
+                <span className="text-xs text-emerald-400 font-semibold">Earning!</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      {/* Worker Type Selection */}
+      <section className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-semibold text-white">Choose Your Worker Type</h2>
+          <p className="mt-2 text-sm text-white/60">
+            Select the inference architecture that best fits your use case
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Far Mono Worker */}
+          <Card
+            elevated
+            className={`cursor-pointer space-y-4 transition-all duration-300 ${
+              selectedWorkerType === 'mono'
+                ? 'border-brand ring-2 ring-brand/40'
+                : 'border-white/10 hover:border-brand/40'
+            }`}
+            onClick={() => setSelectedWorkerType('mono')}
+          >
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h3 className="text-xl font-semibold text-white">Far Mono Worker</h3>
+                <p className="text-sm text-brand-soft">Single-GPU Inference</p>
+              </div>
+              {selectedWorkerType === 'mono' && (
+                <CheckCircle2 className="h-6 w-6 text-brand-soft" />
+              )}
+            </div>
+            <p className="text-sm text-white/60">
+              Run complete models on a single GPU. Best for users with powerful GPUs (RTX 3080+, A100)
+              who want maximum performance and simplicity.
+            </p>
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.3em] text-white/40">Key Features</p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2 text-sm text-white/60">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Fastest inference latency</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-white/60">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Runs entire models locally</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-white/60">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Higher earnings per task</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+              <p className="text-xs text-white/50">Recommended GPU</p>
+              <p className="text-sm font-semibold text-white">RTX 3080 • RTX 4090 • A100 • H100</p>
+            </div>
+          </Card>
+
+          {/* Far Mesh Worker */}
+          <Card
+            elevated
+            className={`cursor-pointer space-y-4 transition-all duration-300 ${
+              selectedWorkerType === 'mesh'
+                ? 'border-brand ring-2 ring-brand/40'
+                : 'border-white/10 hover:border-brand/40'
+            }`}
+            onClick={() => setSelectedWorkerType('mesh')}
+          >
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h3 className="text-xl font-semibold text-white">Far Mesh Worker</h3>
+                <p className="text-sm text-brand-soft">Distributed Inference (Petals)</p>
+              </div>
+              {selectedWorkerType === 'mesh' && (
+                <CheckCircle2 className="h-6 w-6 text-brand-soft" />
+              )}
+            </div>
+            <p className="text-sm text-white/60">
+              Join a distributed network running large models collaboratively. Perfect for consumer
+              GPUs (RTX 3060+) to participate in running massive models like Llama-70B.
+            </p>
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.3em] text-white/40">Key Features</p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2 text-sm text-white/60">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Run models larger than your VRAM</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-white/60">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Lower VRAM requirements (8GB+)</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-white/60">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Access to premium models</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+              <p className="text-xs text-white/50">Recommended GPU</p>
+              <p className="text-sm font-semibold text-white">RTX 3060 • RTX 3070 • RTX 4060 Ti</p>
+            </div>
+          </Card>
+        </div>
       </section>
 
       {/* System Requirements */}
@@ -175,7 +376,12 @@ export default function GpuDownloadPage() {
         <section className="space-y-6">
           <Card elevated className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-semibold text-white">Docker Installation</h3>
+              <div className="space-y-1">
+                <h3 className="text-2xl font-semibold text-white">Docker Installation</h3>
+                <p className="text-sm text-brand-soft">
+                  {selectedWorkerType === 'mono' ? 'Far Mono Worker - Single-GPU Inference' : 'Far Mesh Worker - Distributed Inference'}
+                </p>
+              </div>
               <Container className="h-8 w-8 text-brand-soft" />
             </div>
 
@@ -286,7 +492,12 @@ export default function GpuDownloadPage() {
         <section className="space-y-6">
           <Card elevated className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-semibold text-white">Python Installation</h3>
+              <div className="space-y-1">
+                <h3 className="text-2xl font-semibold text-white">Python Installation</h3>
+                <p className="text-sm text-brand-soft">
+                  {selectedWorkerType === 'mono' ? 'Far Mono Worker - Single-GPU Inference' : 'Far Mesh Worker - Distributed Inference'}
+                </p>
+              </div>
               <Terminal className="h-8 w-8 text-brand-soft" />
             </div>
 
@@ -302,8 +513,11 @@ export default function GpuDownloadPage() {
                 <div className="pl-11">
                   <div className="rounded-xl border border-white/10 bg-black/40 p-4">
                     <pre className="overflow-x-auto text-sm text-white/80">
-                      <code>{`git clone https://github.com/farlabs/farlabs-platform.git
-cd farlabs-platform/backend/services/gpu_worker_client`}</code>
+                      <code>{selectedWorkerType === 'mono'
+                        ? `git clone https://github.com/farlabs/farlabs-platform.git
+cd farlabs-platform/backend/services/gpu_worker_client`
+                        : `git clone https://github.com/farlabs/farlabs-platform.git
+cd farlabs-platform/backend/services/far_mesh_worker`}</code>
                     </pre>
                   </div>
                 </div>
@@ -342,11 +556,17 @@ pip install -r requirements.txt`}</code>
                 <div className="pl-11">
                   <div className="rounded-xl border border-white/10 bg-black/40 p-4">
                     <pre className="overflow-x-auto text-sm text-white/80">
-                      <code>{`FARLABS_API_BASE_URL=http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com
+                      <code>{selectedWorkerType === 'mono'
+                        ? `FARLABS_API_BASE_URL=http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com
 FARLABS_WALLET_ADDRESS=0xYOUR_WALLET_HERE
 FARLABS_AUTH_REFRESH_ENABLED=True
 FARLABS_EXECUTOR=huggingface
-FARLABS_EXECUTOR_DEVICE=cuda`}</code>
+FARLABS_EXECUTOR_DEVICE=cuda`
+                        : `FARLABS_API_BASE_URL=http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com
+FARLABS_WALLET_ADDRESS=0xYOUR_WALLET_HERE
+FARLABS_DHT_BOOTSTRAP=/ip4/34.239.181.168/tcp/31337/p2p/QmBootstrapPeer
+FARLABS_MODEL_NAME=meta-llama/Llama-2-7b-chat-hf
+FARLABS_LOCATION=US-East`}</code>
                     </pre>
                   </div>
                 </div>
@@ -363,7 +583,9 @@ FARLABS_EXECUTOR_DEVICE=cuda`}</code>
                 <div className="pl-11">
                   <div className="rounded-xl border border-white/10 bg-black/40 p-4">
                     <pre className="overflow-x-auto text-sm text-white/80">
-                      <code>python -m farlabs_gpu_worker run</code>
+                      <code>{selectedWorkerType === 'mono'
+                        ? 'python -m farlabs_gpu_worker run'
+                        : 'python main.py'}</code>
                     </pre>
                   </div>
                 </div>

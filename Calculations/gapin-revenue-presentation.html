@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GaPIN Revenue Model</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 50px rgba(0,0,0,0.3);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .assumptions {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .assumptions h2 {
+            color: #2a5298;
+            margin-top: 0;
+        }
+        .assumptions li {
+            margin: 8px 0;
+            font-size: 1.05em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: right;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td:first-child, th:first-child {
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e8e9ff;
+            transition: all 0.3s ease;
+        }
+        .highlight {
+            background-color: #ffd93d;
+            font-weight: bold;
+        }
+        .revenue-split {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        .split-box {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .split-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .split-box.gamers {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .split-box.stakers {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .split-box.foundation {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .split-box h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.4em;
+        }
+        .split-box .percentage {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: white;
+        }
+        .summary p {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .kpi-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .kpi-card h4 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+        .kpi-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2a5298;
+        }
+        @media (max-width: 768px) {
+            .revenue-split {
+                flex-direction: column;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            table {
+                font-size: 0.9em;
+            }
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GaPIN Revenue Model</h1>
+            <p>3-Year Revenue Projection for GPU Resource Network</p>
+        </div>
+        
+        <div class="content">
+            <div class="assumptions">
+                <h2>Key Assumptions</h2>
+                <ul>
+                    <li><strong>Total Gaming Computers Worldwide:</strong> 907 million</li>
+                    <li><strong>Target Market Penetration:</strong> 15% by Year 3 (136.05 million computers)</li>
+                    <li><strong>Growth Pattern:</strong> Linear progression over 3 years</li>
+                    <li><strong>Rental Rate:</strong> $0.30 per GPU hour</li>
+                    <li><strong>Available Hours:</strong> 22.4 hours/day per computer</li>
+                    <li><strong>Utilization Rate:</strong> 80% of available hours</li>
+                    <li><strong>Target Markets:</strong> CIS, Turkey, and MENA regions</li>
+                    <li><strong>Operating Cost:</strong> $0.035 per GPU hour</li>
+                </ul>
+            </div>
+
+            <h2>Revenue Distribution Model</h2>
+            <div class="revenue-split">
+                <div class="split-box gamers">
+                    <h3>Gamers</h3>
+                    <div class="percentage">34%</div>
+                    <p>$0.102 per GPU hour</p>
+                    <p><strong>Year 3 Daily:</strong><br>$248.2M</p>
+                </div>
+                <div class="split-box stakers">
+                    <h3>$FAR Stakers</h3>
+                    <div class="percentage">36%</div>
+                    <p>$0.108 per GPU hour</p>
+                    <p><strong>Year 3 Daily:</strong><br>$262.8M</p>
+                </div>
+                <div class="split-box foundation">
+                    <h3>Foundation</h3>
+                    <div class="percentage">30%</div>
+                    <p>$0.090 per GPU hour</p>
+                    <p><strong>Year 3 Daily:</strong><br>$219.0M</p>
+                </div>
+            </div>
+
+            <h2>3-Year Growth Trajectory</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Year 1</th>
+                        <th>Year 2</th>
+                        <th>Year 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Network Penetration</td>
+                        <td>5%</td>
+                        <td>10%</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>Computers on Network</td>
+                        <td>45.35M</td>
+                        <td>90.7M</td>
+                        <td>136.05M</td>
+                    </tr>
+                    <tr>
+                        <td>Daily GPU Hours Utilized</td>
+                        <td>812.7M</td>
+                        <td>1,623.6M</td>
+                        <td>2,433.5M</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td>Daily Gross Revenue</td>
+                        <td>$243.8M</td>
+                        <td>$487.1M</td>
+                        <td>$730.1M</td>
+                    </tr>
+                    <tr>
+                        <td>Annual Gross Revenue</td>
+                        <td>$89.0B</td>
+                        <td>$178.0B</td>
+                        <td>$267.0B</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Key Performance Indicators</h2>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <h4>Gamer Monthly Earnings</h4>
+                    <div class="value">$55.60</div>
+                    <p>Per computer</p>
+                </div>
+                <div class="kpi-card">
+                    <h4>Gamer Annual Earnings</h4>
+                    <div class="value">$667.16</div>
+                    <p>Per computer</p>
+                </div>
+                <div class="kpi-card">
+                    <h4>Total 3-Year Revenue</h4>
+                    <div class="value">$533.9B</div>
+                    <p>Gross revenue</p>
+                </div>
+                <div class="kpi-card">
+                    <h4>Year 3 Daily Revenue</h4>
+                    <div class="value">$730.1M</div>
+                    <p>At 15% penetration</p>
+                </div>
+            </div>
+
+            <h2>Annual Revenue Breakdown</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Total Revenue</th>
+                        <th>To Gamers (34%)</th>
+                        <th>To $FAR Stakers (36%)</th>
+                        <th>To Foundation (30%)</th>
+                        <th>Net Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Year 1</td>
+                        <td>$89.0B</td>
+                        <td>$30.3B</td>
+                        <td>$32.0B</td>
+                        <td>$26.7B</td>
+                        <td>$78.6B</td>
+                    </tr>
+                    <tr>
+                        <td>Year 2</td>
+                        <td>$178.0B</td>
+                        <td>$60.5B</td>
+                        <td>$64.1B</td>
+                        <td>$53.4B</td>
+                        <td>$157.2B</td>
+                    </tr>
+                    <tr>
+                        <td>Year 3</td>
+                        <td>$267.0B</td>
+                        <td>$90.8B</td>
+                        <td>$96.1B</td>
+                        <td>$80.1B</td>
+                        <td>$235.8B</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="summary">
+                <h2>Executive Summary</h2>
+                <p><strong>GaPIN's Value Proposition:</strong> By connecting 15% of gaming computers worldwide, GaPIN creates a massive decentralized GPU network serving AI and compute workloads at competitive prices.</p>
+                <p><strong>Total 3-Year Gross Revenue:</strong> $533.9 billion</p>
+                <p><strong>Daily Revenue by Year 3:</strong> $730.1 million</p>
+                <p><strong>Computers in Network by Year 3:</strong> 136.05 million</p>
+                <p><strong>Competitive Advantage:</strong> 25-33% lower prices than competitors ($0.30 vs $0.40-$0.45)</p>
+                <p><strong>Gamer Benefits:</strong> Average earnings of $667 annually per computer</p>
+                <p><strong>Market Focus:</strong> CIS, Turkey, and MENA regions with low operating costs ($0.035/hour)</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

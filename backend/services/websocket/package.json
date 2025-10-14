@@ -1,0 +1,25 @@
+{
+  "name": "farlabs-websocket-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "start": "node build/server.js",
+    "build": "tsup server.ts --format esm,cjs --dts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.13.0",
+    "@socket.io/redis-adapter": "^9.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "redis": "^4.6.13",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.12.7",
+    "tsup": "^8.0.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.5"
+  }
+}

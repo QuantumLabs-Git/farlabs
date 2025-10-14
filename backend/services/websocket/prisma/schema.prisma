@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String @id @db.Uuid
+  walletAddress String @unique @map("wallet_address")
+
+  @@map("users")
+}
+
+model GPUNode {
+  id               String   @id @db.Uuid
+  nodeId           String   @unique @map("node_id")
+  ownerAddress     String?  @map("owner_address")
+  status           String?
+  tasksCompleted   Int?     @map("tasks_completed")
+  totalEarned      Decimal? @map("total_earned") @db.Decimal(20, 8)
+  uptimePercentage Decimal? @map("uptime_percentage") @db.Decimal(5, 2)
+
+  @@map("gpu_nodes")
+}
+
+model InferenceTask {
+  id              String   @id @db.Uuid
+  taskId          String   @unique @map("task_id")
+  status          String?
+  tokensGenerated Int?     @map("tokens_generated")
+  costFar         Decimal? @map("cost_far") @db.Decimal(20, 8)
+  nodeId          String?  @map("node_id")
+
+  @@map("inference_tasks")
+}
+
+model RevenueStream {
+  id         String   @id @db.Uuid
+  streamType String   @map("stream_type")
+  userId     String?  @map("user_id") @db.Uuid
+  amountFar  Decimal? @map("amount_far") @db.Decimal(20, 8)
+  amountUsd  Decimal? @map("amount_usd") @db.Decimal(10, 4)
+
+  @@map("revenue_streams")
+}

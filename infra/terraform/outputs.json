@@ -1,0 +1,51 @@
+{
+  "alb_dns_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com"
+  },
+  "database_connection_string": {
+    "sensitive": true,
+    "type": "string",
+    "value": "postgresql://farlabs_admin:FarLabs2025SecurePass!@farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com:5432/farlabs"
+  },
+  "ecs_cluster_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "farlabs-cluster-free"
+  },
+  "frontend_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com"
+  },
+  "public_subnet_ids": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        "string",
+        "string"
+      ]
+    ],
+    "value": [
+      "subnet-0298cae01864340b9",
+      "subnet-0bcea6d127a5346d0"
+    ]
+  },
+  "rds_database_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "farlabs"
+  },
+  "rds_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com"
+  },
+  "redis_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "farlabs-redis-free.b8rw3f.0001.use1.cache.amazonaws.com"
+  }
+}

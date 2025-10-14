@@ -1,0 +1,112 @@
+name: Build and Deploy Services
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - "contracts/**"
+      - ".github/workflows/deploy-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  ECR_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  ECS_CLUSTER_NAME: farlabs-cluster
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - id: frontend
+            context: frontend
+            dockerfile: frontend/Dockerfile
+            repository: farlabs-frontend
+            ecs_service: farlabs-frontend
+          - id: api-gateway
+            context: backend/api-gateway
+            dockerfile: backend/api-gateway/Dockerfile
+            repository: farlabs-api-gateway
+            ecs_service: farlabs-api
+          - id: desci
+            context: backend/services/desci
+            dockerfile: backend/services/desci/Dockerfile
+            repository: farlabs-desci
+            ecs_service: farlabs-desci
+          - id: gamed
+            context: backend/services/gamed
+            dockerfile: backend/services/gamed/Dockerfile
+            repository: farlabs-gamed
+            ecs_service: farlabs-gamed
+          - id: gaming
+            context: backend/services/gaming
+            dockerfile: backend/services/gaming/Dockerfile
+            repository: farlabs-gaming
+            ecs_service: farlabs-gaming
+          - id: inference
+            context: backend/services/inference
+            dockerfile: backend/services/inference/Dockerfile
+            repository: farlabs-inference
+            ecs_service: farlabs-inference
+          - id: gpu
+            context: backend/services/gpu
+            dockerfile: backend/services/gpu/Dockerfile
+            repository: farlabs-gpu
+            ecs_service: farlabs-gpu
+          - id: websocket
+            context: backend/services/websocket
+            dockerfile: backend/services/websocket/Dockerfile
+            repository: farlabs-websocket
+            ecs_service: farlabs-websocket
+          - id: staking
+            context: backend/services/staking
+            dockerfile: backend/services/staking/Dockerfile
+            repository: farlabs-staking
+            ecs_service: farlabs-staking
+          - id: payments
+            context: backend/services/payments
+            dockerfile: backend/services/payments/Dockerfile
+            repository: farlabs-payments
+            ecs_service: farlabs-payments
+          - id: auth
+            context: backend/services/auth
+            dockerfile: backend/services/auth/Dockerfile
+            repository: farlabs-auth
+            ecs_service: farlabs-auth
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          IMAGE_URI: ${{ env.ECR_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ matrix.repository }}:${{ github.sha }}
+          LATEST_URI: ${{ env.ECR_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ matrix.repository }}:latest
+        run: |
+          docker build --platform linux/amd64 -f ${{ matrix.dockerfile }} ${{ matrix.context }} -t "$IMAGE_URI"
+          docker tag "$IMAGE_URI" "$LATEST_URI"
+          docker push "$IMAGE_URI"
+          docker push "$LATEST_URI"
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster "${{ env.ECS_CLUSTER_NAME }}" \
+            --service "${{ matrix.ecs_service }}" \
+            --force-new-deployment
