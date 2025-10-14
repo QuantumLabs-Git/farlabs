@@ -11,7 +11,7 @@ AWS_REGION="us-east-1"
 AWS_ACCOUNT_ID="894059646844"
 ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 SERVICE_NAME="farlabs-far-mesh-worker-free"
-BUILD_EC2_IP="3.94.113.76"
+BUILD_EC2_IP="34.207.204.100"
 SSH_KEY="$HOME/.ssh/farlabs-deploy-key.pem"
 
 echo "[1/4] Copying Far Mesh Worker files to EC2 build server..."

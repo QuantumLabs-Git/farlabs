@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Far Labs - Frontend-Only Deployment
-# Builds and deploys just the frontend with new download page
+# Far Labs - Far Mesh Coordinator Deployment (EC2-based build)
+# Builds and deploys the Far Mesh Coordinator with new features
 
 set -e
 
 echo "================================================"
-echo "Far Labs - Frontend Deployment"
+echo "Far Labs - Far Mesh Coordinator Deployment"
 echo "================================================"
 echo ""
 
@@ -14,8 +14,9 @@ echo ""
 AWS_REGION="us-east-1"
 AWS_ACCOUNT_ID="894059646844"
 KEY_NAME="farlabs-deploy-key"
-INSTANCE_TYPE="t2.micro"
+INSTANCE_TYPE="t3.medium"
 AMI_ID="ami-0453ec754f44f9a4a"  # Amazon Linux 2023
+EBS_VOLUME_SIZE="30"  # GB - needed for heavy ML dependencies
 
 # Get VPC and Subnet
 cd "$(dirname "$0")/../infra/terraform"
@@ -25,8 +26,8 @@ cd -
 
 echo "Creating security group..."
 SG_ID=$(aws ec2 create-security-group \
-    --group-name farlabs-frontend-build-sg-$(date +%s) \
-    --description "Temporary SG for frontend build" \
+    --group-name farlabs-coordinator-build-sg-$(date +%s) \
+    --description "Temporary SG for coordinator build" \
     --vpc-id ${VPC_ID} \
     --query 'GroupId' \
     --output text)
@@ -38,7 +39,7 @@ aws ec2 authorize-security-group-ingress \
     --port 22 \
     --cidr 0.0.0.0/0 2>/dev/null || true
 
-echo "Launching EC2 instance..."
+echo "Launching EC2 instance with ${EBS_VOLUME_SIZE}GB storage..."
 INSTANCE_ID=$(aws ec2 run-instances \
     --image-id ${AMI_ID} \
     --instance-type ${INSTANCE_TYPE} \
@@ -46,7 +47,8 @@ INSTANCE_ID=$(aws ec2 run-instances \
     --security-group-ids ${SG_ID} \
     --subnet-id ${SUBNET_ID} \
     --iam-instance-profile Name=farlabs-ec2-build-profile \
-    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=farlabs-frontend-builder}]" \
+    --block-device-mappings "[{\"DeviceName\":\"/dev/xvda\",\"Ebs\":{\"VolumeSize\":${EBS_VOLUME_SIZE},\"VolumeType\":\"gp3\"}}]" \
+    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=farlabs-coordinator-builder}]" \
     --user-data '#!/bin/bash
 yum update -y
 yum install -y docker git
@@ -80,38 +82,42 @@ for i in {1..30}; do
     sleep 10
 done
 
-echo "Uploading frontend code..."
+echo "Uploading Far Mesh Coordinator code..."
 ssh -o StrictHostKeyChecking=no -i ~/.ssh/farlabs-deploy-key.pem ec2-user@${PUBLIC_IP} 'mkdir -p /home/ec2-user/build'
 cd "$(dirname "$0")/.."
-tar czf - frontend/ | ssh -o StrictHostKeyChecking=no -i ~/.ssh/farlabs-deploy-key.pem ec2-user@${PUBLIC_IP} 'cd /home/ec2-user/build && tar xzf -'
+tar czf - backend/services/far_mesh_coordinator/ backend/common/ | ssh -o StrictHostKeyChecking=no -i ~/.ssh/farlabs-deploy-key.pem ec2-user@${PUBLIC_IP} 'cd /home/ec2-user/build && tar xzf -'
 
-echo "Building and pushing frontend..."
+echo "Building and pushing Far Mesh Coordinator..."
 ssh -o StrictHostKeyChecking=no -i ~/.ssh/farlabs-deploy-key.pem ec2-user@${PUBLIC_IP} 'bash -s' <<'REMOTE'
 set -e
 
 AWS_REGION="us-east-1"
 AWS_ACCOUNT_ID="894059646844"
 ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+SERVICE_NAME="farlabs-far-mesh-coordinator-free"
 
 echo "Logging into ECR..."
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
-cd /home/ec2-user/build/frontend
+# Note: ECR repository should already exist (created during infrastructure setup)
+echo "Using ECR repository: ${SERVICE_NAME}"
 
-echo "Building frontend..."
-docker build -t farlabs-frontend-free:latest .
-docker tag farlabs-frontend-free:latest ${ECR_REGISTRY}/farlabs-frontend-free:latest
+cd /home/ec2-user/build/backend/services/far_mesh_coordinator
+
+echo "Building Far Mesh Coordinator (no cache)..."
+docker build --no-cache -t ${SERVICE_NAME}:latest .
+docker tag ${SERVICE_NAME}:latest ${ECR_REGISTRY}/${SERVICE_NAME}:latest
 
 echo "Pushing to ECR..."
-docker push ${ECR_REGISTRY}/farlabs-frontend-free:latest
+docker push ${ECR_REGISTRY}/${SERVICE_NAME}:latest
 
-echo "✓ Frontend built and pushed!"
+echo "✓ Far Mesh Coordinator built and pushed!"
 REMOTE
 
 echo "Updating ECS service..."
 aws ecs update-service \
     --cluster farlabs-cluster-free \
-    --service farlabs-frontend-free \
+    --service farlabs-far-mesh-coordinator-free \
     --force-new-deployment \
     --region ${AWS_REGION} >/dev/null
 
@@ -121,10 +127,13 @@ aws ec2 delete-security-group --group-id ${SG_ID} 2>/dev/null || echo "Will clea
 
 echo ""
 echo "================================================"
-echo "✓ Frontend Deployment Complete!"
+echo "✓ Far Mesh Coordinator Deployment Complete!"
 echo "================================================"
 echo ""
-echo "The new frontend with /gpu/download page is deploying..."
+echo "The updated Far Mesh Coordinator is deploying with:"
+echo "  - Layer-specific payment tracking"
+echo "  - Fine-tuning endpoints"
+echo "  - Monitoring metrics endpoints"
+echo ""
 echo "Wait 1-2 minutes for ECS to complete the deployment."
 echo ""
-echo "Verify at: http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com/gpu/download"

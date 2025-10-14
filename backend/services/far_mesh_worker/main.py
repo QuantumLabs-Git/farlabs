@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Far Labs GPU Mesh Worker - Petals Server
+Far Labs GPU Mesh Worker
 
-This worker runs Petals server blocks that participate in the distributed
+This worker participates in the distributed
 Far Mesh network for decentralized AI inference.
 """
 
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class FarMeshWorker:
-    """Far Labs Petals server worker"""
+    """Far Labs distributed inference worker"""
 
     def __init__(self):
         # Required configuration
@@ -149,17 +149,17 @@ class FarMeshWorker:
             await self.send_heartbeat()
             await asyncio.sleep(self.heartbeat_interval)
 
-    def start_petals_server(self):
-        """Start the Petals server"""
-        logger.info("Starting Petals server...")
+    def start_mesh_server(self):
+        """Start the distributed mesh server"""
+        logger.info("Starting distributed mesh server...")
         logger.info(f"Model: {self.model_name}")
         logger.info(f"DHT: {self.dht_bootstrap}")
 
         try:
-            # Import Petals here to fail fast if not installed
-            from petals import ServerConfig, run_server
+            # TODO: Implement distributed server configuration
+            # Placeholder for distributed inference server
 
-            # Configure Petals server
+            # Configure mesh server
             config = ServerConfig(
                 model_name=self.model_name,
                 dht_prefix=f"farlabs_{self.model_name}",  # Namespace for Far Labs
@@ -174,7 +174,7 @@ class FarMeshWorker:
             if self.num_blocks:
                 config.num_blocks = int(self.num_blocks)
 
-            logger.info("✓ Petals configuration ready")
+            logger.info("✓ Mesh server configuration ready")
             logger.info("Connecting to DHT and downloading model weights...")
             logger.info("This may take 10-30 minutes on first run")
 
@@ -182,10 +182,10 @@ class FarMeshWorker:
             run_server(config)
 
         except ImportError:
-            logger.error("Petals not installed. Please install with: pip install petals")
+            logger.error("Distributed inference dependencies not installed.")
             raise
         except Exception as e:
-            logger.error(f"Failed to start Petals server: {e}")
+            logger.error(f"Failed to start mesh server: {e}")
             raise
 
     async def run(self):
@@ -203,9 +203,9 @@ class FarMeshWorker:
             logger.info(f"✓ Node ID: {self.node_id}")
             logger.info("━" * 60)
 
-            # Start Petals server (blocking - runs in main thread)
+            # Start mesh server (blocking - runs in main thread)
             # This will keep the worker running until interrupted
-            await asyncio.to_thread(self.start_petals_server)
+            await asyncio.to_thread(self.start_mesh_server)
 
         except KeyboardInterrupt:
             logger.info("\n Shutting down gracefully...")
@@ -219,7 +219,7 @@ class FarMeshWorker:
 def main():
     """Entry point"""
     logger.info("=" * 60)
-    logger.info("Far Labs GPU Mesh Worker (Petals Server)")
+    logger.info("Far Labs GPU Mesh Worker")
     logger.info("=" * 60)
 
     try:

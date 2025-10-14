@@ -283,7 +283,7 @@ export default function GpuDownloadPage() {
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <h3 className="text-xl font-semibold text-white">Far Mesh Worker</h3>
-                <p className="text-sm text-brand-soft">Distributed Inference (Petals)</p>
+                <p className="text-sm text-brand-soft">Distributed Inference</p>
               </div>
               {selectedWorkerType === 'mesh' && (
                 <CheckCircle2 className="h-6 w-6 text-brand-soft" />

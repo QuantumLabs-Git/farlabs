@@ -1,5 +1,4 @@
 # Far Labs - Far Mesh Coordinator Dependencies
-# Uses latest Petals from GitHub (with Pydantic v2 + modern package support)
 
 # Core FastAPI stack - MODERN VERSIONS
 fastapi>=0.115.0
@@ -10,9 +9,15 @@ redis>=5.0.0
 asyncpg>=0.29.0
 python-dotenv>=1.0.0
 
-# Distributed Inference - Latest Petals from GitHub
-# This includes: transformers==4.43.1, torch>=2.3.0, hivemind with Pydantic v2, accelerate, bitsandbytes
-petals @ git+https://github.com/bigscience-workshop/petals.git@main
+# Distributed Inference
+transformers>=4.43.0
+torch>=2.3.0
+accelerate>=0.28.0
+
+# Fine-tuning dependencies
+peft>=0.7.0  # LoRA adapters for parameter-efficient fine-tuning
+datasets>=2.15.0  # HuggingFace datasets for training data
+numpy>=1.24.0  # Numerical operations
 
 # Payment tracking - MODERN VERSIONS
 web3>=6.20.0

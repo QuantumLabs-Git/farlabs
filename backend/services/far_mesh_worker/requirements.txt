@@ -1,7 +1,4 @@
 # Core dependencies for distributed inference
-# Note: Petals 2.3.0.dev2 requires exact versions to avoid conflicts
-git+https://github.com/bigscience-workshop/petals.git@main
-hivemind>=1.1.10
 transformers>=4.43.0
 torch>=2.3.0
 accelerate>=0.28.0

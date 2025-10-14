@@ -41,10 +41,10 @@ export function ArchitectureOverview() {
     <section className="space-y-10">
       <div className="space-y-3">
         <h2 className="text-3xl font-semibold text-white md:text-4xl">
-          Far Labs inference architecture (Petals powered)
+          Far Labs inference architecture
         </h2>
         <p className="max-w-3xl text-sm text-white/60">
-          A payment-aware fork of Petals adapted to Web3 settlements, GPU provider incentives, and enterprise-grade observability.
+          A payment-aware distributed inference system adapted to Web3 settlements, GPU provider incentives, and enterprise-grade observability.
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-3">

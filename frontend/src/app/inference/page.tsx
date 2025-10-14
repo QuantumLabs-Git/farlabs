@@ -17,7 +17,7 @@ const features = [
     icon: Cpu,
     title: 'Distributed GPU mesh',
     description:
-      'Latency-aware routing across 12k+ GPU providers coordinated by the Far Labs petals scheduler.'
+      'Latency-aware routing across 12k+ GPU providers coordinated by the Far Labs distributed scheduler.'
   },
   {
     icon: Sparkles,
@@ -45,7 +45,7 @@ const features = [
   }
 ];
 
-const petalsModes = [
+const distributedModes = [
   {
     title: 'Edge Micro-Shards',
     subtitle: 'Latency-sensitive, pay-as-you-go',
@@ -57,7 +57,7 @@ const petalsModes = [
     title: 'Validator Pods',
     subtitle: 'Balanced throughput and cost',
     description:
-      'Dedicated pod of 8 GPU providers coordinated via our petals scheduler. Optimized for steady workloads and streamed completions.',
+      'Dedicated pod of 8 GPU providers coordinated via our distributed scheduler. Optimized for steady workloads and streamed completions.',
     metrics: ['50K tokens/sec shared', 'Priority routing', 'Dynamic rate limits']
   },
   {
@@ -176,7 +176,7 @@ export default function InferencePage() {
                 </div>
               </div>
               <p className="text-sm text-white/60">
-                Distributed inference across multiple GPU providers using Petals. Ideal for large models and cost-efficient scaling across the network mesh.
+                Distributed inference across multiple GPU providers. Ideal for large models and cost-efficient scaling across the network mesh.
               </p>
             </div>
             <ul className="space-y-2 text-sm text-white/70">
@@ -190,7 +190,7 @@ export default function InferencePage() {
               </li>
               <li className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-                <span>Powered by Petals framework</span>
+                <span>Powered by distributed inference</span>
               </li>
             </ul>
           </Card>
@@ -213,7 +213,7 @@ export default function InferencePage() {
         </header>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {petalsModes.map((mode) => (
+          {distributedModes.map((mode) => (
             <Card key={mode.title} elevated className="flex h-full flex-col justify-between gap-6">
               <div className="space-y-4">
                 <div>
