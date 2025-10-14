@@ -14,7 +14,7 @@ echo ""
 AWS_REGION="us-east-1"
 AWS_ACCOUNT_ID="894059646844"
 KEY_NAME="farlabs-deploy-key"
-INSTANCE_TYPE="t2.micro"
+INSTANCE_TYPE="t3.small"  # Upgraded for faster Next.js builds
 AMI_ID="ami-0453ec754f44f9a4a"  # Amazon Linux 2023
 
 # Get VPC and Subnet
