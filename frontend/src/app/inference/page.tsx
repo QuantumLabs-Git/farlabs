@@ -90,6 +90,9 @@ export default function InferencePage() {
             <Link href="/docs/inference">
               <Button variant="ghost">View API Reference</Button>
             </Link>
+            <Link href="/gpu/download">
+              <Button variant="ghost">Connect GPU</Button>
+            </Link>
           </div>
         </div>
         <Card elevated className="space-y-4">

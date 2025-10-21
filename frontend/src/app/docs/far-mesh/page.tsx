@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Network, ArrowLeft, Zap, Shield, Layers, Code, Terminal, CheckCircle, AlertCircle, Copy, Check, GitBranch } from 'lucide-react';
+import { Network, ArrowLeft, Zap, Shield, Layers, Code, CheckCircle, AlertCircle, Copy, Check, GitBranch } from 'lucide-react';
+import { Card } from '@/components/ui/Card';
 
 export default function FarMeshDocsPage() {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
@@ -197,38 +197,30 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
-      <div className="container mx-auto px-6 pt-24 pb-16 max-w-5xl">
+    <div className="min-h-screen space-y-12 pb-16">
+      <div className="max-w-5xl mx-auto">
         {/* Back Button */}
         <Link href="/docs">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
-          >
+          <div className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8">
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Documentation</span>
-          </motion.div>
+          </div>
         </Link>
 
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 mb-6">
-            <Network className="w-10 h-10 text-white" />
+        <div className="mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand/20 border border-brand/30 mb-6">
+            <Network className="w-10 h-10 text-brand-soft" />
           </div>
 
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 text-white">
             Far Mesh Documentation
           </h1>
 
-          <p className="text-xl text-gray-400 leading-relaxed">
+          <p className="text-xl text-white/60 leading-relaxed">
             Distributed inference across a mesh network of GPU nodes. Scalable, fault-tolerant, and cost-effective for variable workloads.
           </p>
-        </motion.div>
+        </div>
 
         {/* Key Features */}
         <section className="mb-16">
@@ -240,11 +232,11 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
               { icon: Layers, title: 'Dynamic Scaling', desc: 'Add/remove nodes based on demand' },
               { icon: Zap, title: 'Cost Efficient', desc: 'Pay only for chunks processed' }
             ].map((feature) => (
-              <div key={feature.title} className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-                <feature.icon className="w-8 h-8 text-purple-400 mb-3" />
+              <Card key={feature.title} className="p-6">
+                <feature.icon className="w-8 h-8 text-brand-soft mb-3" />
                 <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.desc}</p>
-              </div>
+                <p className="text-white/60">{feature.desc}</p>
+              </Card>
             ))}
           </div>
         </section>
@@ -252,152 +244,152 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
         {/* Architecture */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-white mb-6">Architecture</h2>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
-            <p className="text-gray-300 mb-6 leading-relaxed">
+          <Card elevated className="p-8">
+            <p className="text-white/70 mb-6 leading-relaxed">
               Far Mesh uses a <strong className="text-white">distributed mesh architecture</strong> where inference tasks are split into chunks and processed in parallel across multiple GPU nodes. This provides scalability, fault tolerance, and cost efficiency.
             </p>
 
-            <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-700/30 mb-6">
+            <div className="bg-white/5 rounded-2xl p-6 border border-white/5 mb-6">
               <h3 className="text-lg font-semibold text-white mb-4">Request Flow</h3>
-              <ol className="space-y-3 text-gray-300">
+              <ol className="space-y-3 text-white/70">
                 <li className="flex gap-3">
-                  <span className="text-purple-400 font-mono">1.</span>
+                  <span className="text-brand-soft font-mono">1.</span>
                   <span>Client submits inference request with $FAR token deposit</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-purple-400 font-mono">2.</span>
+                  <span className="text-brand-soft font-mono">2.</span>
                   <span><strong className="text-white">Coordinator</strong> splits prompt into chunks based on token count</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-purple-400 font-mono">3.</span>
+                  <span className="text-brand-soft font-mono">3.</span>
                   <span><strong className="text-white">Scheduler</strong> assigns chunks to available worker nodes</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-purple-400 font-mono">4.</span>
+                  <span className="text-brand-soft font-mono">4.</span>
                   <span><strong className="text-white">Workers</strong> process chunks in parallel on their GPUs</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-purple-400 font-mono">5.</span>
+                  <span className="text-brand-soft font-mono">5.</span>
                   <span><strong className="text-white">Aggregator</strong> combines results into final output</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-purple-400 font-mono">6.</span>
+                  <span className="text-brand-soft font-mono">6.</span>
                   <span>Result returned to client, $FAR distributed to workers proportionally</span>
                 </li>
               </ol>
             </div>
 
-            <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-lg p-6">
+            <div className="bg-brand/10 border border-brand/30 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                <GitBranch className="w-5 h-5 text-purple-400" />
+                <GitBranch className="w-5 h-5 text-brand-soft" />
                 Redundancy & Failover
               </h3>
-              <p className="text-gray-300 leading-relaxed">
+              <p className="text-white/70 leading-relaxed">
                 Each chunk can be processed by multiple nodes (redundancy factor). If a node fails or becomes slow,
                 the chunk is automatically reassigned to another available node. This ensures 99.9% reliability even
                 with unreliable individual nodes.
               </p>
             </div>
-          </div>
+          </Card>
         </section>
 
         {/* Mesh Configuration */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-white mb-6">Mesh Configuration</h2>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl overflow-hidden">
+          <Card elevated className="overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-900/50 border-b border-gray-700">
+              <thead className="bg-white/5 border-b border-white/5">
                 <tr>
-                  <th className="text-left p-4 text-gray-300 font-semibold">Parameter</th>
-                  <th className="text-left p-4 text-gray-300 font-semibold">Description</th>
-                  <th className="text-left p-4 text-gray-300 font-semibold">Default</th>
-                  <th className="text-left p-4 text-gray-300 font-semibold">Range</th>
+                  <th className="text-left p-4 text-white/70 font-semibold">Parameter</th>
+                  <th className="text-left p-4 text-white/70 font-semibold">Description</th>
+                  <th className="text-left p-4 text-white/70 font-semibold">Default</th>
+                  <th className="text-left p-4 text-white/70 font-semibold">Range</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700/50">
+              <tbody className="divide-y divide-white/5">
                 <tr>
                   <td className="p-4 text-white font-mono">min_nodes</td>
-                  <td className="p-4 text-gray-300">Minimum nodes required</td>
-                  <td className="p-4 text-gray-300">2</td>
-                  <td className="p-4 text-gray-300">1-100</td>
+                  <td className="p-4 text-white/70">Minimum nodes required</td>
+                  <td className="p-4 text-white/70">2</td>
+                  <td className="p-4 text-white/70">1-100</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">max_nodes</td>
-                  <td className="p-4 text-gray-300">Maximum nodes to use</td>
-                  <td className="p-4 text-gray-300">10</td>
-                  <td className="p-4 text-gray-300">1-100</td>
+                  <td className="p-4 text-white/70">Maximum nodes to use</td>
+                  <td className="p-4 text-white/70">10</td>
+                  <td className="p-4 text-white/70">1-100</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">chunk_size</td>
-                  <td className="p-4 text-gray-300">Tokens per chunk</td>
-                  <td className="p-4 text-gray-300">256</td>
-                  <td className="p-4 text-gray-300">64-1024</td>
+                  <td className="p-4 text-white/70">Tokens per chunk</td>
+                  <td className="p-4 text-white/70">256</td>
+                  <td className="p-4 text-white/70">64-1024</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">redundancy</td>
-                  <td className="p-4 text-gray-300">Nodes per chunk</td>
-                  <td className="p-4 text-gray-300">2</td>
-                  <td className="p-4 text-gray-300">1-5</td>
+                  <td className="p-4 text-white/70">Nodes per chunk</td>
+                  <td className="p-4 text-white/70">2</td>
+                  <td className="p-4 text-white/70">1-5</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">timeout_ms</td>
-                  <td className="p-4 text-gray-300">Max processing time</td>
-                  <td className="p-4 text-gray-300">30000</td>
-                  <td className="p-4 text-gray-300">1000-120000</td>
+                  <td className="p-4 text-white/70">Max processing time</td>
+                  <td className="p-4 text-white/70">30000</td>
+                  <td className="p-4 text-white/70">1000-120000</td>
                 </tr>
               </tbody>
             </table>
-          </div>
+          </Card>
         </section>
 
         {/* Supported Models */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-white mb-6">Supported Models</h2>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl overflow-hidden">
+          <Card elevated className="overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-900/50 border-b border-gray-700">
+              <thead className="bg-white/5 border-b border-white/5">
                 <tr>
-                  <th className="text-left p-4 text-gray-300 font-semibold">Model</th>
-                  <th className="text-left p-4 text-gray-300 font-semibold">Parameters</th>
-                  <th className="text-left p-4 text-gray-300 font-semibold">Parallelizable</th>
-                  <th className="text-right p-4 text-gray-300 font-semibold">Cost ($FAR/chunk)</th>
+                  <th className="text-left p-4 text-white/70 font-semibold">Model</th>
+                  <th className="text-left p-4 text-white/70 font-semibold">Parameters</th>
+                  <th className="text-left p-4 text-white/70 font-semibold">Parallelizable</th>
+                  <th className="text-right p-4 text-white/70 font-semibold">Cost ($FAR/chunk)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700/50">
+              <tbody className="divide-y divide-white/5">
                 <tr>
                   <td className="p-4 text-white font-mono">llama-3-8b</td>
-                  <td className="p-4 text-gray-300">8B</td>
-                  <td className="p-4"><span className="text-green-400">✓ Yes</span></td>
-                  <td className="p-4 text-right text-green-400">0.00002</td>
+                  <td className="p-4 text-white/70">8B</td>
+                  <td className="p-4"><span className="text-brand-accent">✓ Yes</span></td>
+                  <td className="p-4 text-right text-brand-accent">0.00002</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">llama-3-70b</td>
-                  <td className="p-4 text-gray-300">70B</td>
-                  <td className="p-4"><span className="text-green-400">✓ Yes</span></td>
-                  <td className="p-4 text-right text-green-400">0.0002</td>
+                  <td className="p-4 text-white/70">70B</td>
+                  <td className="p-4"><span className="text-brand-accent">✓ Yes</span></td>
+                  <td className="p-4 text-right text-brand-accent">0.0002</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">mistral-7b</td>
-                  <td className="p-4 text-gray-300">7B</td>
-                  <td className="p-4"><span className="text-green-400">✓ Yes</span></td>
-                  <td className="p-4 text-right text-green-400">0.000015</td>
+                  <td className="p-4 text-white/70">7B</td>
+                  <td className="p-4"><span className="text-brand-accent">✓ Yes</span></td>
+                  <td className="p-4 text-right text-brand-accent">0.000015</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">codellama-34b</td>
-                  <td className="p-4 text-gray-300">34B</td>
-                  <td className="p-4"><span className="text-green-400">✓ Yes</span></td>
-                  <td className="p-4 text-right text-green-400">0.0001</td>
+                  <td className="p-4 text-white/70">34B</td>
+                  <td className="p-4"><span className="text-brand-accent">✓ Yes</span></td>
+                  <td className="p-4 text-right text-brand-accent">0.0001</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-white font-mono">stable-diffusion-xl</td>
-                  <td className="p-4 text-gray-300">3.5B</td>
+                  <td className="p-4 text-white/70">3.5B</td>
                   <td className="p-4"><span className="text-yellow-400">⚠ Partial</span></td>
-                  <td className="p-4 text-right text-green-400">0.0004 per image</td>
+                  <td className="p-4 text-right text-brand-accent">0.0004 per image</td>
                 </tr>
               </tbody>
             </table>
-          </div>
-          <p className="text-sm text-gray-400 mt-4">
+          </Card>
+          <p className="text-sm text-white/60 mt-4">
             * Costs are per 256-token chunk. Total cost = (chunks × redundancy factor × cost per chunk)
           </p>
         </section>
@@ -405,7 +397,7 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
         {/* API Reference */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-            <Code className="w-8 h-8 text-purple-400" />
+            <Code className="w-8 h-8 text-brand-soft" />
             API Reference
           </h2>
 
@@ -415,11 +407,11 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
               <h3 className="text-xl font-semibold text-white">Python Client</h3>
               <button
                 onClick={() => copyToClipboard(codeExamples.python, 'python')}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors text-sm text-gray-300"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-sm text-white/70"
               >
                 {copiedSection === 'python' ? (
                   <>
-                    <Check className="w-4 h-4 text-green-400" />
+                    <Check className="w-4 h-4 text-brand-accent" />
                     <span>Copied!</span>
                   </>
                 ) : (
@@ -430,8 +422,8 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
                 )}
               </button>
             </div>
-            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700/50 overflow-x-auto">
-              <pre className="text-sm text-gray-300 font-mono">
+            <div className="bg-black/50 rounded-2xl p-6 border border-white/5 overflow-x-auto">
+              <pre className="text-sm text-white/70 font-mono">
                 <code>{codeExamples.python}</code>
               </pre>
             </div>
@@ -443,11 +435,11 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
               <h3 className="text-xl font-semibold text-white">cURL</h3>
               <button
                 onClick={() => copyToClipboard(codeExamples.curl, 'curl')}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors text-sm text-gray-300"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-sm text-white/70"
               >
                 {copiedSection === 'curl' ? (
                   <>
-                    <Check className="w-4 h-4 text-green-400" />
+                    <Check className="w-4 h-4 text-brand-accent" />
                     <span>Copied!</span>
                   </>
                 ) : (
@@ -458,8 +450,8 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
                 )}
               </button>
             </div>
-            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700/50 overflow-x-auto">
-              <pre className="text-sm text-gray-300 font-mono">
+            <div className="bg-black/50 rounded-2xl p-6 border border-white/5 overflow-x-auto">
+              <pre className="text-sm text-white/70 font-mono">
                 <code>{codeExamples.curl}</code>
               </pre>
             </div>
@@ -471,11 +463,11 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
               <h3 className="text-xl font-semibold text-white">Node.js / TypeScript</h3>
               <button
                 onClick={() => copyToClipboard(codeExamples.nodejs, 'nodejs')}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors text-sm text-gray-300"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-sm text-white/70"
               >
                 {copiedSection === 'nodejs' ? (
                   <>
-                    <Check className="w-4 h-4 text-green-400" />
+                    <Check className="w-4 h-4 text-brand-accent" />
                     <span>Copied!</span>
                   </>
                 ) : (
@@ -486,8 +478,8 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
                 )}
               </button>
             </div>
-            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700/50 overflow-x-auto">
-              <pre className="text-sm text-gray-300 font-mono">
+            <div className="bg-black/50 rounded-2xl p-6 border border-white/5 overflow-x-auto">
+              <pre className="text-sm text-white/70 font-mono">
                 <code>{codeExamples.nodejs}</code>
               </pre>
             </div>
@@ -498,52 +490,52 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-white mb-6">Best Practices</h2>
           <div className="space-y-4">
-            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
+            <div className="bg-brand-accent/10 border border-brand-accent/30 rounded-2xl p-6">
               <div className="flex gap-3">
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+                <CheckCircle className="w-6 h-6 text-brand-accent flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-2">DO: Use for variable workloads</h3>
-                  <p className="text-gray-300">Far Mesh excels with unpredictable traffic patterns. The mesh automatically scales based on demand.</p>
+                  <p className="text-white/70">Far Mesh excels with unpredictable traffic patterns. The mesh automatically scales based on demand.</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
+            <div className="bg-brand-accent/10 border border-brand-accent/30 rounded-2xl p-6">
               <div className="flex gap-3">
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+                <CheckCircle className="w-6 h-6 text-brand-accent flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-2">DO: Set appropriate redundancy</h3>
-                  <p className="text-gray-300">Use redundancy=2 or 3 for production workloads to ensure reliability. Higher redundancy = higher cost but better fault tolerance.</p>
+                  <p className="text-white/70">Use redundancy=2 or 3 for production workloads to ensure reliability. Higher redundancy = higher cost but better fault tolerance.</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
+            <div className="bg-brand-accent/10 border border-brand-accent/30 rounded-2xl p-6">
               <div className="flex gap-3">
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+                <CheckCircle className="w-6 h-6 text-brand-accent flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-2">DO: Tune chunk size</h3>
-                  <p className="text-gray-300">Smaller chunks = more parallelism but higher overhead. Larger chunks = less overhead but less parallelism. Start with 256 tokens.</p>
+                  <p className="text-white/70">Smaller chunks = more parallelism but higher overhead. Larger chunks = less overhead but less parallelism. Start with 256 tokens.</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
+            <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6">
               <div className="flex gap-3">
                 <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-2">DON'T: Use for ultra-low latency</h3>
-                  <p className="text-gray-300">Far Mesh adds 100-200ms overhead for coordination. If you need sub-100ms latency, use Far Mono instead.</p>
+                  <p className="text-white/70">Far Mesh adds 100-200ms overhead for coordination. If you need sub-100ms latency, use Far Mono instead.</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
+            <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6">
               <div className="flex gap-3">
                 <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-2">DON'T: Set min_nodes too high</h3>
-                  <p className="text-gray-300">Setting min_nodes=20 means your request will fail if fewer than 20 nodes are available. Start conservative.</p>
+                  <p className="text-white/70">Setting min_nodes=20 means your request will fail if fewer than 20 nodes are available. Start conservative.</p>
                 </div>
               </div>
             </div>
@@ -553,76 +545,76 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
         {/* Performance Metrics */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-white mb-6">Performance Metrics</h2>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
+          <Card elevated className="p-8">
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="text-center">
-                <div className="text-4xl font-bold text-purple-400 mb-2">100-300ms</div>
-                <div className="text-gray-400">Average Latency</div>
+                <div className="text-4xl font-bold text-brand-soft mb-2">100-300ms</div>
+                <div className="text-white/60">Average Latency</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-green-400 mb-2">99.9%</div>
-                <div className="text-gray-400">Reliability</div>
+                <div className="text-4xl font-bold text-brand-accent mb-2">99.9%</div>
+                <div className="text-white/60">Reliability</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-pink-400 mb-2">10,000+</div>
-                <div className="text-gray-400">Concurrent requests</div>
+                <div className="text-4xl font-bold text-brand mb-2">10,000+</div>
+                <div className="text-white/60">Concurrent requests</div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-lg p-6">
+            <div className="bg-brand/10 border border-brand/30 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-3">Scaling Performance</h3>
-              <p className="text-gray-300 mb-4">
+              <p className="text-white/70 mb-4">
                 Far Mesh scales linearly with the number of nodes. Adding more nodes increases throughput without increasing latency.
               </p>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-purple-400">2x</div>
-                  <div className="text-sm text-gray-400">at 10 nodes</div>
+                  <div className="text-2xl font-bold text-brand-soft">2x</div>
+                  <div className="text-sm text-white/60">at 10 nodes</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-400">5x</div>
-                  <div className="text-sm text-gray-400">at 25 nodes</div>
+                  <div className="text-2xl font-bold text-brand-soft">5x</div>
+                  <div className="text-sm text-white/60">at 25 nodes</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-400">10x</div>
-                  <div className="text-sm text-gray-400">at 50+ nodes</div>
+                  <div className="text-2xl font-bold text-brand-soft">10x</div>
+                  <div className="text-sm text-white/60">at 50+ nodes</div>
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </section>
 
         {/* Cost Comparison */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-white mb-6">Cost Comparison</h2>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8">
-            <p className="text-gray-300 mb-6">
+          <Card elevated className="p-8">
+            <p className="text-white/70 mb-6">
               Far Mesh is typically 20-30% more expensive than Far Mono due to redundancy and coordination overhead,
               but offers much better scalability and fault tolerance.
             </p>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-gray-900/50 rounded-lg p-6 border border-blue-500/30">
-                <h3 className="text-lg font-semibold text-blue-400 mb-4">Far Mono</h3>
-                <div className="space-y-2 text-gray-300">
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-brand-soft mb-4">Far Mono</h3>
+                <div className="space-y-2 text-white/70">
                   <div className="flex justify-between">
                     <span>1000 tokens (Llama-3-70B)</span>
                     <span className="font-mono text-white">0.001 $FAR</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Overhead</span>
-                    <span className="font-mono text-green-400">Minimal</span>
+                    <span className="font-mono text-brand-accent">Minimal</span>
                   </div>
-                  <div className="flex justify-between border-t border-gray-700 pt-2 mt-2">
+                  <div className="flex justify-between border-t border-white/10 pt-2 mt-2">
                     <span className="font-semibold">Total</span>
                     <span className="font-mono text-white font-semibold">0.001 $FAR</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gray-900/50 rounded-lg p-6 border border-purple-500/30">
-                <h3 className="text-lg font-semibold text-purple-400 mb-4">Far Mesh (redundancy=2)</h3>
-                <div className="space-y-2 text-gray-300">
+              <div className="bg-white/5 rounded-2xl p-6 border border-brand/30">
+                <h3 className="text-lg font-semibold text-brand mb-4">Far Mesh (redundancy=2)</h3>
+                <div className="space-y-2 text-white/70">
                   <div className="flex justify-between">
                     <span>1000 tokens (4 chunks)</span>
                     <span className="font-mono text-white">0.0008 $FAR</span>
@@ -635,7 +627,7 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
                     <span>Coordination overhead</span>
                     <span className="font-mono text-white">+0.0002 $FAR</span>
                   </div>
-                  <div className="flex justify-between border-t border-gray-700 pt-2 mt-2">
+                  <div className="flex justify-between border-t border-brand/30 pt-2 mt-2">
                     <span className="font-semibold">Total</span>
                     <span className="font-mono text-white font-semibold">0.0018 $FAR</span>
                   </div>
@@ -643,105 +635,33 @@ console.log(\`Processed by \${result.nodes_used} nodes\`);`
               </div>
             </div>
 
-            <div className="mt-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+            <div className="mt-6 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4">
               <p className="text-sm text-yellow-200">
                 <strong>Pro tip:</strong> Far Mesh becomes more cost-effective at scale due to better GPU utilization across the network.
                 Single large requests may cost more, but overall platform efficiency is higher.
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* Current Limitations */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-white mb-6">Current Limitations & Roadmap</h2>
-          <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-8">
-            <p className="text-gray-300 mb-6">
-              Far Mesh is actively under development. The following features are planned or in progress:
-            </p>
-
-            <div className="space-y-4">
-              <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-700/30">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-yellow-400 mt-2 flex-shrink-0"></div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Payment Distribution (In Progress)</h3>
-                    <p className="text-gray-300 mb-3">
-                      Currently, $FAR payments are split equally among all visible peers in the mesh network.
-                      We're implementing layer-specific tracking to ensure payments are proportional to the actual
-                      computational work performed by each node.
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-sm text-yellow-400">
-                      <span className="font-mono">Status:</span>
-                      <span>Coming in v0.2.0</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-700/30">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0"></div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Fine-tuning Support (Planned)</h3>
-                    <p className="text-gray-300 mb-3">
-                      Collaborative fine-tuning across the mesh network is not yet supported. This feature will allow
-                      users to fine-tune large models by distributing training across multiple GPU nodes, with automatic
-                      gradient aggregation and checkpoint management.
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-sm text-orange-400">
-                      <span className="font-mono">Status:</span>
-                      <span>Planned for Q2 2025</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-700/30">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-400 mt-2 flex-shrink-0"></div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Advanced Monitoring (In Development)</h3>
-                    <p className="text-gray-300 mb-3">
-                      Enhanced monitoring dashboard with real-time mesh topology visualization, per-node performance
-                      metrics, request tracing through the network, and predictive analytics for node availability.
-                    </p>
-                    <div className="inline-flex items-center gap-2 text-sm text-blue-400">
-                      <span className="font-mono">Status:</span>
-                      <span>Beta available Q1 2025</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-gray-700/50">
-              <p className="text-sm text-gray-400">
-                💡 All core inference features are production-ready. These enhancements will improve payment accuracy,
-                expand capabilities, and provide better observability.
-              </p>
-            </div>
-          </div>
+          </Card>
         </section>
 
         {/* Getting Started CTA */}
         <section>
-          <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl p-8 text-center">
+          <Card elevated className="p-8 text-center border-2 border-brand/30">
             <h2 className="text-3xl font-bold text-white mb-4">Ready to scale with Far Mesh?</h2>
-            <p className="text-gray-300 mb-6">Join the distributed inference revolution. Get your API key and start building resilient applications.</p>
+            <p className="text-white/70 mb-6">Join the distributed inference revolution. Get your API key and start building resilient applications.</p>
             <div className="flex gap-4 justify-center">
               <Link href="/dashboard">
-                <button className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg transition-all">
+                <button className="px-6 py-3 bg-brand hover:bg-brand-soft text-white font-semibold rounded-xl transition-colors">
                   Get API Key
                 </button>
               </Link>
               <Link href="/docs/far-mono">
-                <button className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                <button className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-colors border border-white/10">
                   Compare with Far Mono
                 </button>
               </Link>
             </div>
-          </div>
+          </Card>
         </section>
       </div>
     </div>

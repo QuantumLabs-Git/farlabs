@@ -82,6 +82,17 @@ for i in {1..30}; do
     sleep 10
 done
 
+# Wait for Docker to be installed and running
+echo "Waiting for Docker to be ready..."
+for i in {1..60}; do
+    if ssh -o StrictHostKeyChecking=no -i ~/.ssh/farlabs-deploy-key.pem ec2-user@${PUBLIC_IP} 'docker --version' 2>/dev/null; then
+        echo "Docker is ready!"
+        break
+    fi
+    echo "Waiting for Docker installation... ($i/60)"
+    sleep 5
+done
+
 echo "Uploading Far Mesh Coordinator code..."
 ssh -o StrictHostKeyChecking=no -i ~/.ssh/farlabs-deploy-key.pem ec2-user@${PUBLIC_IP} 'mkdir -p /home/ec2-user/build'
 cd "$(dirname "$0")/.."
@@ -97,7 +108,7 @@ ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 SERVICE_NAME="farlabs-far-mesh-coordinator-free"
 
 echo "Logging into ECR..."
-aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+aws ecr get-login-password --region ${AWS_REGION} | sudo docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
 # Note: ECR repository should already exist (created during infrastructure setup)
 echo "Using ECR repository: ${SERVICE_NAME}"
@@ -105,11 +116,11 @@ echo "Using ECR repository: ${SERVICE_NAME}"
 cd /home/ec2-user/build/backend/services/far_mesh_coordinator
 
 echo "Building Far Mesh Coordinator (no cache)..."
-docker build --no-cache -t ${SERVICE_NAME}:latest .
-docker tag ${SERVICE_NAME}:latest ${ECR_REGISTRY}/${SERVICE_NAME}:latest
+sudo docker build --no-cache -t ${SERVICE_NAME}:latest .
+sudo docker tag ${SERVICE_NAME}:latest ${ECR_REGISTRY}/${SERVICE_NAME}:latest
 
 echo "Pushing to ECR..."
-docker push ${ECR_REGISTRY}/${SERVICE_NAME}:latest
+sudo docker push ${ECR_REGISTRY}/${SERVICE_NAME}:latest
 
 echo "✓ Far Mesh Coordinator built and pushed!"
 REMOTE

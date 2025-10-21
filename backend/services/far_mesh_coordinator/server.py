@@ -5,6 +5,7 @@ FastAPI server exposing distributed inference endpoints.
 """
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 from fastapi import FastAPI, HTTPException, Header
@@ -12,7 +13,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
-from coordinator import (
+from .coordinator import (
     FarMeshCoordinator,
     InferenceRequest,
     TokenResponse,
@@ -39,8 +40,11 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Far Mesh Coordinator Service")
 
+    # Get model ID from environment or use a public default
+    model_id = os.getenv("MODEL_ID", "bigscience/bloom-560m")  # Use smaller public model as default
+
     coordinator = FarMeshCoordinator(
-        model_id="meta-llama/Llama-2-7b-chat-hf",  # Default model
+        model_id=model_id,
         # DHT bootstrap will be configured via environment variables
     )
 
