@@ -514,10 +514,10 @@ export default function GpuDownloadPage() {
                   <div className="rounded-xl border border-white/10 bg-black/40 p-4">
                     <pre className="overflow-x-auto text-sm text-white/80">
                       <code>{selectedWorkerType === 'mono'
-                        ? `git clone https://github.com/farlabs/farlabs-platform.git
-cd farlabs-platform/backend/services/gpu_worker_client`
-                        : `git clone https://github.com/farlabs/farlabs-platform.git
-cd farlabs-platform/backend/services/far_mesh_worker`}</code>
+                        ? `git clone https://github.com/QuantumLabs-Git/farlabs.git
+cd farlabs/backend/services/gpu_worker_client`
+                        : `git clone https://github.com/QuantumLabs-Git/farlabs.git
+cd farlabs/backend/services/far_mesh_worker`}</code>
                     </pre>
                   </div>
                 </div>
