@@ -1,8 +1,8 @@
-"\"\"\"Far Labs Inference Worker
+"""Far Labs Inference Worker
 
 This worker process pulls queued inference tasks from Redis, simulates execution,
 and streams results back to the inference service via pub/sub.
-\"\"\"
+"""
 
 from __future__ import annotations
 

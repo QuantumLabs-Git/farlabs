@@ -1,18 +1,31 @@
 # Core dependencies for distributed inference
-# Note: Petals 2.3.0.dev2 requires exact versions to avoid conflicts
+# Petals 2.3.0+ with MPS (Apple Silicon) support
 git+https://github.com/bigscience-workshop/petals.git@main
 hivemind>=1.1.10
 transformers>=4.43.0
-torch>=2.3.0
 accelerate>=0.28.0
-bitsandbytes==0.41.1
+
+# PyTorch with MPS support (Apple Silicon M1/M2/M3)
+# For CUDA (NVIDIA): pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# For MPS (Apple Silicon): pip install torch torchvision torchaudio
+torch>=2.3.0
+torchvision>=0.18.0
+torchaudio>=2.3.0
+
+# bitsandbytes - NVIDIA only (skip on Apple Silicon)
+# Install with: pip install bitsandbytes==0.41.1 (NVIDIA GPUs only)
+# Apple Silicon users: skip this dependency
 
 # API client
 httpx>=0.27.0
 python-dotenv>=1.0.1
 
-# GPU monitoring
-pynvml>=11.5.0
+# System monitoring (cross-platform)
+psutil>=5.9.0  # For Apple Silicon memory monitoring
+
+# GPU monitoring - NVIDIA only (optional)
+# Install with: pip install pynvml>=11.5.0 (NVIDIA GPUs only)
+# Apple Silicon users: skip this dependency
 
 # Payment tracking (lightweight)
 web3>=6.15.1
