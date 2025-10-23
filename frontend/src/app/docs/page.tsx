@@ -26,6 +26,7 @@ export default function DocsPage() {
   ];
 
   const quickLinks = [
+    { title: 'GPU Provider Guide', href: '/docs/gpu-provider', icon: Cpu },
     { title: 'API Reference', href: '/docs/api', icon: Code },
     { title: 'Getting Started', href: '/docs/getting-started', icon: Zap },
     { title: 'Security', href: '/docs/security', icon: Shield }
@@ -96,7 +97,7 @@ export default function DocsPage() {
         {/* Quick Links */}
         <Card elevated className="space-y-6">
           <h3 className="text-2xl font-bold text-white">Quick Links</h3>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickLinks.map((link) => (
               <Link key={link.title} href={link.href}>
                 <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-brand/10 hover:border-brand/20 transition-all group">
