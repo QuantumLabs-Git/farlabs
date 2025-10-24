@@ -2,12 +2,12 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY services/websocket/package.json services/websocket/package-lock.json ./
 RUN npm ci --no-audit --prefer-offline
 
-COPY prisma ./prisma
-COPY tsconfig.json .
-COPY server.ts .
+COPY services/websocket/prisma ./prisma
+COPY services/websocket/tsconfig.json .
+COPY services/websocket/server.ts .
 
 ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
 
