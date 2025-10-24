@@ -30,52 +30,52 @@ jobs:
             repository: farlabs-frontend
             ecs_service: farlabs-frontend
           - id: api-gateway
-            context: backend/api-gateway
+            context: backend
             dockerfile: backend/api-gateway/Dockerfile
             repository: farlabs-api-gateway
             ecs_service: farlabs-api
           - id: desci
-            context: backend/services/desci
+            context: backend
             dockerfile: backend/services/desci/Dockerfile
             repository: farlabs-desci
             ecs_service: farlabs-desci
           - id: gamed
-            context: backend/services/gamed
+            context: backend
             dockerfile: backend/services/gamed/Dockerfile
             repository: farlabs-gamed
             ecs_service: farlabs-gamed
           - id: gaming
-            context: backend/services/gaming
+            context: backend
             dockerfile: backend/services/gaming/Dockerfile
             repository: farlabs-gaming
             ecs_service: farlabs-gaming
           - id: inference
-            context: backend/services/inference
+            context: backend
             dockerfile: backend/services/inference/Dockerfile
             repository: farlabs-inference
             ecs_service: farlabs-inference
           - id: gpu
-            context: backend/services/gpu
+            context: backend
             dockerfile: backend/services/gpu/Dockerfile
             repository: farlabs-gpu
             ecs_service: farlabs-gpu
           - id: websocket
-            context: backend/services/websocket
+            context: backend
             dockerfile: backend/services/websocket/Dockerfile
             repository: farlabs-websocket
             ecs_service: farlabs-websocket
           - id: staking
-            context: backend/services/staking
+            context: backend
             dockerfile: backend/services/staking/Dockerfile
             repository: farlabs-staking
             ecs_service: farlabs-staking
           - id: payments
-            context: backend/services/payments
+            context: backend
             dockerfile: backend/services/payments/Dockerfile
             repository: farlabs-payments
             ecs_service: farlabs-payments
           - id: auth
-            context: backend/services/auth
+            context: backend
             dockerfile: backend/services/auth/Dockerfile
             repository: farlabs-auth
             ecs_service: farlabs-auth

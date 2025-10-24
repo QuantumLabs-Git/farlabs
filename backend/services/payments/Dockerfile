@@ -5,15 +5,15 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-COPY requirements.txt .
+COPY services/payments/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-# Copy the common module from parent directory
-COPY ../../common /app/common
+# Copy the common module
+COPY common /app/common
 
 # Copy service files
-COPY . .
+COPY services/payments .
 
 EXPOSE 8000
 
