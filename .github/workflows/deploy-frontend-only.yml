@@ -1,0 +1,45 @@
+name: Deploy Frontend Only
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  ECR_ACCOUNT_ID: 894059646844
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push frontend image
+        run: |
+          IMAGE_URI="894059646844.dkr.ecr.us-east-1.amazonaws.com/farlabs-frontend-free:latest"
+          docker build --platform linux/amd64 -f frontend/Dockerfile frontend -t "$IMAGE_URI"
+          docker push "$IMAGE_URI"
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster farlabs-cluster-free \
+            --service farlabs-frontend-free \
+            --force-new-deployment \
+            --region us-east-1
+
+          echo "✅ Frontend deployment triggered!"
+          echo "Page will be live in 2-3 minutes"
