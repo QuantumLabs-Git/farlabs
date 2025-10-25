@@ -40,7 +40,7 @@ class WorkerSettings(BaseModel):
   queue_backoff_seconds: float = Field(default=1.5, gt=0)
   poll_timeout_seconds: int = Field(default=5, ge=1)
 
-  executor: str = Field(default="mock")
+  executor: str = Field(default="huggingface")
   executor_device: str = Field(default="auto")
   executor_dtype: Optional[str] = Field(default=None)
   executor_model_map: Dict[str, str] = Field(default_factory=dict)

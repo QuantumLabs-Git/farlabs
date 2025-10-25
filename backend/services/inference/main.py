@@ -403,6 +403,12 @@ class InferenceRequest(BaseModel):
     temperature: float = 0.7
 
 
+@app.get("/health")
+async def health_check() -> Dict[str, str]:
+    """Health check endpoint for load balancer"""
+    return {"status": "healthy"}
+
+
 @app.post("/api/inference/generate")
 async def generate_text(
     payload: InferenceRequest,
