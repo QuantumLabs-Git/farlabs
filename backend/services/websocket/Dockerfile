@@ -2,8 +2,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY services/websocket/package.json services/websocket/package-lock.json ./
-RUN npm ci --no-audit --prefer-offline
+COPY services/websocket/package.json ./
+RUN npm install --no-audit --prefer-offline
 
 COPY services/websocket/prisma ./prisma
 COPY services/websocket/tsconfig.json .
