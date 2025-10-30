@@ -226,6 +226,44 @@ class ModelInfo(BaseModel):
 
 
 MODEL_REGISTRY: Dict[str, ModelInfo] = {
+    # Small models for testing and low-cost inference (can run on 8-16GB VRAM)
+    "gpt2": ModelInfo(
+        path="gpt2",
+        min_gpu_vram=2,
+        tokens_per_second=100,
+        price_per_1m_tokens=0.1,
+    ),
+    "gpt2-medium": ModelInfo(
+        path="gpt2-medium",
+        min_gpu_vram=4,
+        tokens_per_second=80,
+        price_per_1m_tokens=0.2,
+    ),
+    "distilgpt2": ModelInfo(
+        path="distilgpt2",
+        min_gpu_vram=1,
+        tokens_per_second=150,
+        price_per_1m_tokens=0.05,
+    ),
+    "tinyllama": ModelInfo(
+        path="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+        min_gpu_vram=4,
+        tokens_per_second=120,
+        price_per_1m_tokens=0.15,
+    ),
+    "phi-2": ModelInfo(
+        path="microsoft/phi-2",
+        min_gpu_vram=8,
+        tokens_per_second=100,
+        price_per_1m_tokens=0.3,
+    ),
+    "llama-7b": ModelInfo(
+        path="meta-llama/Llama-2-7b-chat-hf",
+        min_gpu_vram=16,
+        tokens_per_second=80,
+        price_per_1m_tokens=0.5,
+    ),
+    # Large production models (require 140GB+ VRAM)
     "llama-70b": ModelInfo(
         path="meta-llama/Llama-2-70b-chat-hf",
         min_gpu_vram=140,
