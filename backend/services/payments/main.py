@@ -23,6 +23,11 @@ from common import payments_ledger  # noqa: E402
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 
+# Faucet configuration for testing
+ENABLE_FAUCET = os.getenv("ENABLE_FAUCET", "true").lower() in {"1", "true", "yes"}
+FAUCET_AMOUNT = float(os.getenv("FAUCET_AMOUNT", "50.0"))
+FAUCET_MIN_BALANCE = float(os.getenv("FAUCET_MIN_BALANCE", "1.0"))
+
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)
 
 app = FastAPI(title="Far Labs Payments Service", version="1.0.0")
@@ -181,3 +186,43 @@ async def charge(payload: ChargeRequest) -> Dict[str, float]:
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/payments/faucet")
+async def faucet(payload: WalletRequest) -> Dict[str, Any]:
+    """
+    Testnet faucet - gives free tokens to users with low balance.
+    Disabled in production via ENABLE_FAUCET=false.
+    """
+    if not ENABLE_FAUCET:
+        raise HTTPException(
+            status_code=403,
+            detail="Faucet is disabled. Use the official token purchase flow."
+        )
+
+    # Check current balance
+    balances = await payments_ledger.get_balances(redis_client, payload.wallet_address)
+
+    if balances["total"] >= FAUCET_MIN_BALANCE:
+        return {
+            "success": False,
+            "message": f"You already have {balances['total']} tokens. Faucet only available when balance is below {FAUCET_MIN_BALANCE}.",
+            "current_balance": balances
+        }
+
+    # Give faucet tokens
+    result = await payments_ledger.add_available(
+        redis_client,
+        payload.wallet_address,
+        FAUCET_AMOUNT,
+        event_type="faucet",
+        reference="testnet_faucet",
+        metadata={"source": "faucet", "amount": FAUCET_AMOUNT}
+    )
+
+    return {
+        "success": True,
+        "message": f"Successfully added {FAUCET_AMOUNT} free tokens!",
+        "amount_added": FAUCET_AMOUNT,
+        "new_balance": result
+    }

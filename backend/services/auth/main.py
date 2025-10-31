@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import os
 from typing import Any, Dict
+import httpx
 
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -15,6 +16,11 @@ if not JWT_SECRET:
     raise ValueError("JWT_SECRET environment variable must be set")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRES_MINUTES = int(os.getenv("JWT_EXPIRES_MINUTES", "120"))
+
+# Free token configuration for testing
+ENABLE_FREE_TOKENS = os.getenv("ENABLE_FREE_TOKENS", "true").lower() in {"1", "true", "yes"}
+FREE_TOKENS_ON_LOGIN = float(os.getenv("FREE_TOKENS_ON_LOGIN", "100.0"))
+PAYMENTS_SERVICE_URL = os.getenv("PAYMENTS_SERVICE_URL", "http://farlabs-payments-free:8000")
 
 security = HTTPBearer()
 
@@ -70,8 +76,46 @@ def _decode_token(token: str) -> Dict[str, Any]:
         raise HTTPException(status_code=401, detail="Invalid token") from exc
 
 
+async def _give_free_tokens(wallet_address: str) -> None:
+    """Give free tokens to new users on login (for testing)"""
+    if not ENABLE_FREE_TOKENS:
+        return
+
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            # Check current balance
+            try:
+                balance_resp = await client.get(
+                    f"{PAYMENTS_SERVICE_URL}/api/payments/balances/{wallet_address}"
+                )
+                if balance_resp.status_code == 200:
+                    balance_data = balance_resp.json()
+                    # Only give tokens if balance is very low (< 1 token)
+                    if balance_data.get("total", 0) >= 1.0:
+                        return
+            except Exception:
+                # If we can't check balance, proceed to give tokens
+                pass
+
+            # Give free tokens
+            await client.post(
+                f"{PAYMENTS_SERVICE_URL}/api/payments/topup",
+                json={
+                    "wallet_address": wallet_address,
+                    "amount": FREE_TOKENS_ON_LOGIN,
+                    "reference": "free_tokens_on_login",
+                    "metadata": {"source": "auth_service", "reason": "welcome_bonus"}
+                }
+            )
+    except Exception:
+        # Silently fail - don't block login if payments service is down
+        pass
+
+
 @app.post("/api/auth/login", response_model=TokenResponse)
 async def login(payload: LoginRequest) -> TokenResponse:
+    # Give free tokens to user if enabled
+    await _give_free_tokens(payload.wallet_address)
     return _issue_token(payload.wallet_address, payload.session_tag)
 
 
