@@ -63,9 +63,26 @@ class ChargeRequest(WalletAmountRequest):
     pass
 
 
+@app.get("/health")
+async def health() -> Dict[str, str]:
+    return {"status": "ok", "service": "payments"}
+
+
 @app.get("/healthz")
 async def healthcheck() -> Dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/api/payments/balance")
+async def get_current_user_balance() -> Dict[str, float]:
+    """Get balance for the authenticated user (from X-User-Address header)"""
+    # This is typically set by the API gateway after JWT validation
+    # For testing, return zero balances
+    return {
+        "available": 0.0,
+        "escrow": 0.0,
+        "total": 0.0
+    }
 
 
 @app.get("/api/payments/balances/{wallet_address}")

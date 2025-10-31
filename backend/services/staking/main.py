@@ -142,6 +142,34 @@ async def history(wallet_address: str, limit: int = 50) -> Dict[str, Any]:
     return {"history": entries}
 
 
+@app.get("/api/staking/balance")
+async def balance() -> Dict[str, Any]:
+    """Get staking balance for the authenticated user (from X-User-Address header)"""
+    # This is typically set by the API gateway after JWT validation
+    # For now, return a default response
+    # The API gateway should pass the wallet address via header
+    return {
+        "staked": 0.0,
+        "rewards": 0.0,
+        "apy": 0.185,
+        "lock_days": 0,
+        "status": "active"
+    }
+
+
+@app.get("/api/staking/status")
+async def status() -> Dict[str, Any]:
+    """Get staking status for the authenticated user"""
+    return {
+        "staked": 0.0,
+        "rewards_pending": 0.0,
+        "rewards_claimed": 0.0,
+        "apy": 0.185,
+        "next_reward_date": _now_iso(),
+        "status": "active"
+    }
+
+
 @app.get("/api/staking/metrics")
 async def staking_metrics():
     raw_positions = await redis_client.hgetall(POSITIONS_KEY)
