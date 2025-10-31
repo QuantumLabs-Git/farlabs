@@ -11,25 +11,55 @@ interface Props {
 
 const AVAILABLE_MODELS: Array<{ id: string; label: string; description: string }> = [
   {
+    id: 'distilgpt2',
+    label: 'DistilGPT-2',
+    description: 'Smallest and fastest. Perfect for testing and simple tasks.'
+  },
+  {
+    id: 'gpt2',
+    label: 'GPT-2',
+    description: 'Small, fast text generation. Great for prototyping.'
+  },
+  {
+    id: 'gpt2-medium',
+    label: 'GPT-2 Medium',
+    description: 'Medium-sized model with better quality output.'
+  },
+  {
+    id: 'tinyllama',
+    label: 'TinyLlama 1.1B Chat',
+    description: 'Chat-optimized small model. Fast and efficient.'
+  },
+  {
+    id: 'phi-2',
+    label: 'Microsoft Phi-2',
+    description: 'High-quality 2.7B parameter model. Excellent reasoning.'
+  },
+  {
+    id: 'llama-7b',
+    label: 'Llama 2 7B Chat',
+    description: 'Production-quality chat model. Balanced speed and capability.'
+  },
+  {
     id: 'llama-70b',
     label: 'Llama 2 70B Chat',
-    description: 'Balanced latency and cost. Ideal for general assistants.'
+    description: 'Large model with strong capabilities (requires 140GB VRAM).'
   },
   {
     id: 'mixtral-8x22b',
     label: 'Mixtral 8x22B Instruct',
-    description: 'Mixture of experts with creative reasoning capabilities.'
+    description: 'Mixture of experts model (requires 180GB VRAM).'
   },
   {
     id: 'llama-405b',
     label: 'Llama 3.1 405B',
-    description: 'Flagship capability set for enterprise scenarios.'
+    description: 'Flagship model for enterprise (requires 810GB VRAM).'
   }
 ];
 
 export function InferencePlayground({ onCompleted }: Props) {
   const [payload, setPayload] = useState<InferencePayload>({
-    model_id: AVAILABLE_MODELS[0]?.id ?? 'llama-70b',
+    model_id: AVAILABLE_MODELS[0]?.id ?? 'gpt2',
     prompt: '',
     max_tokens: 800,
     temperature: 0.7
