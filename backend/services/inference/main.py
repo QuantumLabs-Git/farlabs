@@ -590,7 +590,7 @@ class NodeRegistration(BaseModel):
     notes: Optional[str] = None
 
 
-@app.post("/api/node/register")
+@app.post("/api/inference/node/register")
 async def register_gpu_node(payload: NodeRegistration) -> Dict[str, Any]:
     node_id = f"node_{uuid.uuid4().hex[:10]}"
     supported_models = [
@@ -620,7 +620,7 @@ async def register_gpu_node(payload: NodeRegistration) -> Dict[str, Any]:
     }
 
 
-@app.get("/api/network/status")
+@app.get("/api/inference/network/status")
 async def get_network_status() -> Dict[str, Any]:
     nodes = await get_gpu_nodes()
     total_nodes = len(nodes)
