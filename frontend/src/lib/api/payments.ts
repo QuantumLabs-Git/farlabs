@@ -47,3 +47,18 @@ export async function withdrawPayments(amount: number, walletAddress: string, re
   });
   return data;
 }
+
+export interface FaucetResponse {
+  success: boolean;
+  message: string;
+  amount_added?: number;
+  new_balance?: PaymentBalance;
+  current_balance?: PaymentBalance;
+}
+
+export async function requestFaucetTokens(walletAddress: string) {
+  const { data} = await apiClient.post<FaucetResponse>('/api/payments/faucet', {
+    wallet_address: walletAddress
+  });
+  return data;
+}
