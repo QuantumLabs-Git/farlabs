@@ -70,7 +70,7 @@ cat > /tmp/far-mesh-coordinator-task-def.json << EOF
         {"name": "PORT", "value": "8003"},
         {"name": "DATABASE_URL", "value": "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}"},
         {"name": "MODEL_ID", "value": "meta-llama/Llama-2-7b-chat-hf"},
-        {"name": "DHT_BOOTSTRAP_ADDR", "value": "/ip4/petals.dev/tcp/31337"},
+        {"name": "DHT_BOOTSTRAP_ADDR", "value": "/ip4/farmesh.dev/tcp/31337"},
         {"name": "PRICE_PER_TOKEN_FAR", "value": "0.0001"},
         {"name": "COORDINATOR_PORT", "value": "8003"}
       ],

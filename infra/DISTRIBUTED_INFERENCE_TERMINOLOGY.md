@@ -8,10 +8,10 @@ This document defines Far Labs' proprietary terminology for our distributed infe
 
 | Instead of | Use | Description |
 |-----------|-----|-------------|
-| Petals | **Far Mesh** | Far Labs' distributed inference mesh network |
-| Petals server | **Far Node** | Individual GPU provider nodes in the mesh |
-| Petals client | **Far Client** | Applications/users consuming distributed inference |
-| Petals swarm | **Far Cluster** | Collection of Far Nodes working together |
+| FarMesh | **Far Mesh** | Far Labs' distributed inference mesh network |
+| FarMesh server | **Far Node** | Individual GPU provider nodes in the mesh |
+| FarMesh client | **Far Client** | Applications/users consuming distributed inference |
+| FarMesh swarm | **Far Cluster** | Collection of Far Nodes working together |
 | Pet als DHT | **Far Discovery** | Peer discovery and routing system |
 | Hivemind | **Far Swarm** | Alternative distributed coordination layer |
 
@@ -19,7 +19,7 @@ This document defines Far Labs' proprietary terminology for our distributed infe
 
 | Instead of | Use | Description |
 |-----------|-----|-------------|
-| Petals spike/test | **Distributed Inference R&D** | Phase 1 research and development |
+| FarMesh spike/test | **Distributed Inference R&D** | Phase 1 research and development |
 | Model sharding | **Layer Distribution** | Splitting model layers across nodes |
 | Activation forwarding | **Tensor Streaming** | Passing activations between nodes |
 | P2P network | **Mesh Network** | Node-to-node communication fabric |
@@ -29,21 +29,21 @@ This document defines Far Labs' proprietary terminology for our distributed infe
 
 | Instead of | Use | Description |
 |-----------|-----|-------------|
-| farlabs-petals-spike | **farlabs-dist-inference-rnd** | R&D infrastructure tag |
-| petals-node | **far-node** | GPU node instance |
-| petals-server.log | **far-node.log** | Node server logs |
-| petals-env | **far-mesh-env** | Python virtual environment |
-| start-petals-server.sh | **start-far-node.sh** | Node startup script |
-| test-petals-client.py | **test-far-client.py** | Client test script |
-| monitor-petals.sh | **monitor-far-node.sh** | Monitoring script |
+| farlabs-farmesh-spike | **farlabs-dist-inference-rnd** | R&D infrastructure tag |
+| farmesh-node | **far-node** | GPU node instance |
+| farmesh-server.log | **far-node.log** | Node server logs |
+| farmesh-env | **far-mesh-env** | Python virtual environment |
+| start-farmesh-server.sh | **start-far-node.sh** | Node startup script |
+| test-farmesh-client.py | **test-far-client.py** | Client test script |
+| monitor-farmesh.sh | **monitor-far-node.sh** | Monitoring script |
 
 ### Configuration
 
 | Instead of | Use | Description |
 |-----------|-----|-------------|
-| PETALS_* | **FAR_MESH_*** | Environment variable prefix |
-| petals.config | **far-mesh.config** | Configuration file |
-| --petals-port | **--mesh-port** | CLI argument |
+| FARMESH_* | **FAR_MESH_*** | Environment variable prefix |
+| farmesh.config | **far-mesh.config** | Configuration file |
+| --farmesh-port | **--mesh-port** | CLI argument |
 
 ## Rebranded Component Names
 
@@ -100,9 +100,9 @@ infra/distributed-inference-rnd/
 
 ### Starting a Far Node
 
-**Before (Petals)**:
+**Before (FarMesh)**:
 ```bash
-petals-start-server meta-llama/Llama-2-7b-chat-hf \
+farmesh-start-server meta-llama/Llama-2-7b-chat-hf \
     --public_name $PUBLIC_IP:31330
 ```
 
@@ -115,9 +115,9 @@ far-node start meta-llama/Llama-2-7b-chat-hf \
 
 ### Client Connection
 
-**Before (Petals)**:
+**Before (FarMesh)**:
 ```python
-from petals import AutoDistributedModelForCausalLM
+from farmesh import AutoDistributedModelForCausalLM
 model = AutoDistributedModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
 ```
 
@@ -132,10 +132,10 @@ model = DistributedModel.from_pretrained(
 
 ### Environment Variables
 
-**Before (Petals)**:
+**Before (FarMesh)**:
 ```bash
-export PETALS_DHT_BOOTSTRAP=/ip4/1.2.3.4/tcp/31337
-export PETALS_PUBLIC_NAME=mynode.example.com:31330
+export FARMESH_DHT_BOOTSTRAP=/ip4/1.2.3.4/tcp/31337
+export FARMESH_PUBLIC_NAME=mynode.example.com:31330
 ```
 
 **After (Far Labs)**:
@@ -148,10 +148,10 @@ export FAR_NODE_PUBLIC_ADDR=mynode.example.com:31330
 
 ### Avoid
 
-- "Petals-style distributed inference"
-- "Using Petals architecture"
-- "Based on Petals project"
-- "Petals swarm"
+- "FarMesh-style distributed inference"
+- "Using FarMesh architecture"
+- "Based on FarMesh project"
+- "FarMesh swarm"
 
 ### Use Instead
 
@@ -166,13 +166,13 @@ export FAR_NODE_PUBLIC_ADDR=mynode.example.com:31330
 > "Far Labs has developed a proprietary distributed inference mesh that enables model-parallel execution across geographically distributed GPU providers. The Far Mesh protocol coordinates tensor streaming between nodes while maintaining sub-500ms latency per token."
 
 ❌ **AVOID**:
-> "We're using Petals for distributed inference, which is an open-source project that does model parallelism."
+> "We're using FarMesh for distributed inference, which is an open-source project that does model parallelism."
 
 ✅ **GOOD**:
 > "The Far Discovery Protocol enables automatic peer finding and health monitoring, allowing nodes to join the cluster seamlessly without centralized coordination."
 
 ❌ **AVOID**:
-> "We use Petals' DHT for node discovery."
+> "We use FarMesh' DHT for node discovery."
 
 ## Attribution (for code comments only)
 
@@ -187,10 +187,10 @@ When referencing implementation approaches in code comments:
 
 ## Summary
 
-**Key Principle**: We acknowledge that Petals and Hivemind are excellent reference implementations, but our code, documentation, and marketing should position Far Labs as having developed our own distributed inference technology stack.
+**Key Principle**: We acknowledge that FarMesh and Hivemind are excellent reference implementations, but our code, documentation, and marketing should position Far Labs as having developed our own distributed inference technology stack.
 
 **Implementation Strategy**:
-1. Use Petals/Hivemind libraries initially for Phase 1 R&D
+1. Use FarMesh/Hivemind libraries initially for Phase 1 R&D
 2. Document findings and architecture decisions in Far Labs terminology
 3. Phase 2+: Replace with custom implementations where differentiation matters
 4. Maintain compatibility with standard transformer models (HuggingFace)

@@ -1,6 +1,6 @@
 # Far Inference Platform Overview
 
-This document captures the Petals-derived inference stack customized for Far Labs, including component architecture, model catalog priorities, pricing levers, and rebranding strategy.
+This document captures the FarMesh-derived inference stack customized for Far Labs, including component architecture, model catalog priorities, pricing levers, and rebranding strategy.
 
 ---
 
@@ -8,7 +8,7 @@ This document captures the Petals-derived inference stack customized for Far Lab
 
 ### Backend (Python-first)
 - **FastAPI** service orchestrating inference requests, JWT authentication, and WebSocket endpoints.
-- **Petals core fork** (now `farlabs_inference`) with payment-aware server and client layers.
+- **FarMesh core fork** (now `farlabs_inference`) with payment-aware server and client layers.
 - **Web3.py** integration for Binance Smart Chain contracts (`InferencePayment`, `NodeRegistry`, `FARToken`).
 - **Redis + Celery** pipeline for asynchronous payment verification, rating adjustments, and task queueing.
 - **PostgreSQL (RDS)** storing users, GPU nodes, billing records, staking metrics.
@@ -93,19 +93,19 @@ Scores influence payout adjustments, marketplace ranking, and staking boosts.
 
 ---
 
-## 5. Petals Rebranding Guidelines
+## 5. FarMesh Rebranding Guidelines
 
-| Original (Petals) | Far Labs Name |
+| Original (FarMesh) | Far Labs Name |
 |-------------------|---------------|
-| `petals` package | `farlabs_inference` |
-| Petals server | Far Labs Node |
+| `farmesh` package | `farlabs_inference` |
+| FarMesh server | Far Labs Node |
 | RemoteSequential | DistributedPipeline |
 | hivemind DHT | FarNet |
 | run_server CLI | start_node |
 | swarm terminology | network |
 
 ### Instructions
-1. Fork the Petals repository and run the automated rebranding script (see `rebranding_script.py` in docs).
+1. Fork the FarMesh repository and run the automated rebranding script (see `rebranding_script.py` in docs).
 2. Update Docker images (`farlabs/inference:latest`) and environment variables (`FARLABS_NODE_NAME`, etc.).
 3. Replace user-facing strings (e.g., “Joining the swarm” → “Connecting to Far Labs Network”).
 4. Maintain MIT attribution with `LICENSE_ATTRIBUTION.md`.

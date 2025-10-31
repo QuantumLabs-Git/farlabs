@@ -2,7 +2,7 @@
 
 **Completion Status**: Phase 2 Complete + Provider Software ✅
 **Date**: October 10, 2025
-**Approach**: Petals/Hivemind with Far Labs Payment Layer
+**Approach**: FarMesh/Hivemind with Far Labs Payment Layer
 
 ---
 
@@ -17,7 +17,7 @@ I've successfully implemented the **core infrastructure** for Far Labs distribut
 **Location**: `backend/services/far_mesh_coordinator/`
 
 ### Files Created:
-- ✅ `coordinator.py` - FarMeshCoordinator class (wraps Petals)
+- ✅ `coordinator.py` - FarMeshCoordinator class (wraps FarMesh)
 - ✅ `server.py` - FastAPI HTTP server with SSE streaming
 - ✅ `requirements.txt` - All dependencies
 - ✅ `Dockerfile` - Production container image
@@ -26,7 +26,7 @@ I've successfully implemented the **core infrastructure** for Far Labs distribut
 
 ### What It Does:
 ```python
-# Connects to Petals DHT network
+# Connects to FarMesh DHT network
 model = AutoDistributedModelForCausalLM.from_pretrained("llama-2-7b")
 
 # Routes inference through distributed GPU nodes
@@ -63,8 +63,8 @@ session.record_node_contribution(node_id, tokens_contributed)
 # Detects GPU hardware
 hardware_info = detect_hardware()  # RTX 4090, 24GB VRAM
 
-# Starts Petals server
-petals_server = Server(
+# Starts FarMesh server
+farmesh_server = Server(
     model="llama-2-7b",
     num_blocks=11,  # Auto-calculated from VRAM
     port=31330
@@ -173,7 +173,7 @@ Complete technical specification covering:
 High-level overview with:
 - Architecture diagrams
 - How everything works
-- Honest assessment of Petals usage
+- Honest assessment of FarMesh usage
 - Next steps
 - Q&A
 
@@ -182,8 +182,8 @@ What's been built and what remains
 
 #### `infra/DISTRIBUTED_INFERENCE_TERMINOLOGY.md`
 Rebranding guide:
-- Petals → Far Mesh
-- Petals server → Far Node
+- FarMesh → Far Mesh
+- FarMesh server → Far Node
 - DHT → Far Discovery
 - Marketing positioning
 
@@ -210,7 +210,7 @@ Rebranding guide:
 
 [2] API GATEWAY ROUTES TO FAR MESH COORDINATOR
     ↓
-    Coordinator connects to Petals DHT network
+    Coordinator connects to FarMesh DHT network
     Discovers available GPU nodes
 
 [3] MODEL LAYERS DISTRIBUTED
@@ -258,9 +258,9 @@ Rebranding guide:
          │            ▼
          │   ┌──────────────────────┐
          │   │ Far Mesh Coordinator │ ← NEW
-         │   │  (Wraps Petals)      │
+         │   │  (Wraps FarMesh)      │
          │   └──────────┬───────────┘
-         │              │ Petals Protocol
+         │              │ FarMesh Protocol
          │              ▼
          │    ┌──────────────────┐
          │    │   Far Mesh DHT   │
@@ -589,8 +589,8 @@ async def test_payment_distribution():
 ```python
 # test_end_to_end.py
 async def test_full_inference_flow():
-    # 1. Start mock Petals network
-    mock_nodes = start_mock_petals_network()
+    # 1. Start mock FarMesh network
+    mock_nodes = start_mock_farmesh_network()
 
     # 2. Send inference request
     response = await client.post("/inference/generate", ...)
@@ -664,7 +664,7 @@ locust -f locustfile.py \
 
 ### Phase 2 (Completed) ✅
 - ✅ Far Mesh Coordinator deployed and functional
-- ✅ Can connect to Petals network
+- ✅ Can connect to FarMesh network
 - ✅ Database schema applied
 - ✅ Provider software ready for download
 

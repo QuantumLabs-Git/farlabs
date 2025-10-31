@@ -24,7 +24,7 @@
 ### ❌ What's Missing
 1. **Discovery Service** - Not yet built (needed for node registry)
 2. **Payment Tracker** - Not yet built (needed for provider payments)
-3. **DHT Bootstrap Node** - Not deployed (needed for Petals network)
+3. **DHT Bootstrap Node** - Not deployed (needed for FarMesh network)
 4. **Provider Dashboard UI** - Not built
 5. **SDKs** - Python and TypeScript SDKs not built
 
@@ -120,10 +120,10 @@ LOG_LEVEL=INFO
 
 #### 1.4 Deploy DHT Bootstrap Node 🎯 HIGH PRIORITY
 
-**Option A: Quick Deploy (Use Existing Petals Bootstrap)**
+**Option A: Quick Deploy (Use Existing FarMesh Bootstrap)**
 ```bash
-# Connect to Petals public bootstrap temporarily
-FAR_MESH_DHT_BOOTSTRAP=/ip4/petals.ml/tcp/31337/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN
+# Connect to FarMesh public bootstrap temporarily
+FAR_MESH_DHT_BOOTSTRAP=/ip4/farmesh.ml/tcp/31337/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN
 ```
 
 **Option B: Deploy Our Own (Recommended)**
@@ -154,7 +154,7 @@ python3 -m hivemind.dht.dht_daemon \
 # Output will show: "Running DHT node with peer_id=QmYourPeerID..."
 ```
 
-**Why**: Required for Petals mesh network to function
+**Why**: Required for FarMesh mesh network to function
 **Time**: 1 hour (Option A: 5 min, Option B: 1 hour)
 **Blockers**: None for Option A
 
@@ -546,7 +546,7 @@ function ChatComponent() {
 
 ## Risk Mitigation
 
-### Risk 1: Petals Network Instability
+### Risk 1: FarMesh Network Instability
 **Mitigation**: Fallback to centralized inference if < 3 nodes available
 
 ### Risk 2: Payment Errors
@@ -612,9 +612,9 @@ psql -h farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com \
 
 ### 2. Deploy DHT Bootstrap (Quick Option) (5 min)
 ```bash
-# Use Petals public bootstrap temporarily
+# Use FarMesh public bootstrap temporarily
 # Update all configs with:
-FAR_MESH_DHT_BOOTSTRAP=/ip4/petals.dev/tcp/31337
+FAR_MESH_DHT_BOOTSTRAP=/ip4/farmesh.dev/tcp/31337
 ```
 
 ### 3. Deploy Far Mesh Coordinator (2-3 hours)

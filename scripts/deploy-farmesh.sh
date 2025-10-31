@@ -2,7 +2,7 @@
 set -e
 
 echo "================================================"
-echo "Far Mesh Coordinator - Build with Latest Petals"
+echo "Far Mesh Coordinator - Build with Latest FarMesh"
 echo "================================================"
 echo ""
 

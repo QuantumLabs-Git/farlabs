@@ -51,7 +51,7 @@ AWS_ACCOUNT_ID="894059646844"
 ECR_REGISTRY="\${AWS_ACCOUNT_ID}.dkr.ecr.\${AWS_REGION}.amazonaws.com"
 SERVICE_NAME="farlabs-far-node-server"
 
-echo "Building Docker image (this will take 10-15 minutes due to PyTorch and Petals)..."
+echo "Building Docker image (this will take 10-15 minutes due to PyTorch and FarMesh)..."
 cd /home/ec2-user/far_node_server_build
 docker build -t "\${SERVICE_NAME}:latest" .
 echo "✓ Image built"

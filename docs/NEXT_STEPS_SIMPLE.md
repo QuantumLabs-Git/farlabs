@@ -94,7 +94,7 @@ cat > /tmp/far-mesh-coordinator-task.json << 'EOF'
       {"name": "PORT", "value": "8003"},
       {"name": "DATABASE_URL", "value": "postgresql://farlabs_admin:FarLabs2025SecurePass!@farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com/farlabs"},
       {"name": "MODEL_ID", "value": "meta-llama/Llama-2-7b-chat-hf"},
-      {"name": "DHT_BOOTSTRAP_ADDR", "value": "/ip4/petals.dev/tcp/31337"},
+      {"name": "DHT_BOOTSTRAP_ADDR", "value": "/ip4/farmesh.dev/tcp/31337"},
       {"name": "PRICE_PER_TOKEN_FAR", "value": "0.0001"}
     ],
     "logConfiguration": {
@@ -245,6 +245,6 @@ For a truly minimal viable product:
 Deploy regular inference service → Test end-to-end → Add distributed later
 
 **Option B: Go straight to distributed (60 min)**
-Finish Far Mesh Coordinator → Deploy → May hit issues with Petals network discovery
+Finish Far Mesh Coordinator → Deploy → May hit issues with FarMesh network discovery
 
 I'd recommend **Option A** - get a working system first, then enhance it. What do you think?

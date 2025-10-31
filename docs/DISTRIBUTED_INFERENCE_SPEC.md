@@ -9,11 +9,11 @@
 
 ## Executive Summary
 
-Far Labs will build a distributed GPU marketplace that enables model-parallel inference across consumer and enterprise GPUs. The system leverages proven distributed inference technology (Petals/Hivemind) and adds blockchain payments, provider incentives, and quality guarantees.
+Far Labs will build a distributed GPU marketplace that enables model-parallel inference across consumer and enterprise GPUs. The system leverages proven distributed inference technology (FarMesh/Hivemind) and adds blockchain payments, provider incentives, and quality guarantees.
 
 **Key Differentiator**: First distributed AI inference marketplace with token-based payments for GPU providers.
 
-**Core Technology**: Petals/Hivemind for distributed inference + custom payment/marketplace layer.
+**Core Technology**: FarMesh/Hivemind for distributed inference + custom payment/marketplace layer.
 
 ---
 
@@ -58,7 +58,7 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│              Distributed Inference Network (Petals)              │
+│              Distributed Inference Network (FarMesh)              │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐     │
@@ -85,14 +85,14 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
 #### New Components (To Build)
 
 **1. Far Mesh Coordinator** (`backend/services/far_mesh/`)
-- Wraps Petals/Hivemind APIs
+- Wraps FarMesh/Hivemind APIs
 - Tracks inference sessions
 - Credits providers per token/layer
 - Routes requests to distributed swarm
 
 **2. Far Node Server** (`backend/services/far_node/`)
 - Runs on GPU provider machines
-- Serves model layers via Petals
+- Serves model layers via FarMesh
 - Reports availability to platform
 - Receives $FAR token payments
 
@@ -117,7 +117,7 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
 
 ### 2.1 Objectives
 
-1. Test Petals with 3-node cluster
+1. Test FarMesh with 3-node cluster
 2. Measure latency, throughput, bandwidth
 3. Validate failure recovery
 4. Document architecture decisions
@@ -127,7 +127,7 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
 
 #### Infrastructure
 - Terraform config for 3x g5.xlarge GPU nodes
-- Bootstrap scripts (NVIDIA drivers, Docker, Petals)
+- Bootstrap scripts (NVIDIA drivers, Docker, FarMesh)
 - Monitoring scripts (GPU, network, logs)
 
 #### Testing Scripts
@@ -140,7 +140,7 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
 - **R&D Report** (`docs/PHASE1_REPORT.md`)
   - Executive summary
   - Performance metrics
-  - Comparison: Petals vs Hivemind vs vLLM
+  - Comparison: FarMesh vs Hivemind vs vLLM
   - Architecture recommendations
   - Risk assessment
 
@@ -176,7 +176,7 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
 ## 3. Phase 2: Payment Integration
 
 **Duration**: 4 weeks
-**Goal**: Add payment layer on top of Petals
+**Goal**: Add payment layer on top of FarMesh
 **Deliverables**: Working payments for distributed inference
 
 ### 3.1 Architecture
@@ -186,7 +186,7 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
 1. User requests inference via API Gateway
 2. Far Mesh Coordinator receives request
 3. Coordinator queries Discovery Service for available nodes
-4. Coordinator initiates Petals distributed session
+4. Coordinator initiates FarMesh distributed session
 5. Payment Tracker monitors which nodes contribute
 6. Inference completes, tokens streamed to user
 7. Payment Tracker calculates splits
@@ -200,7 +200,7 @@ Far Labs will build a distributed GPU marketplace that enables model-parallel in
 **File**: `backend/services/far_mesh/coordinator.py`
 
 ```python
-from petals import AutoDistributedModelForCausalLM
+from farmesh import AutoDistributedModelForCausalLM
 from transformers import AutoTokenizer
 import torch
 from typing import AsyncIterator
@@ -209,7 +209,7 @@ from ..common.discovery import DiscoveryClient
 
 class FarMeshCoordinator:
     """
-    Wraps Petals distributed inference with payment tracking.
+    Wraps FarMesh distributed inference with payment tracking.
     """
 
     def __init__(
@@ -222,7 +222,7 @@ class FarMeshCoordinator:
         self.discovery = DiscoveryClient(discovery_url)
         self.payment_tracker = PaymentTracker(payment_contract_address)
 
-        # Load Petals distributed model
+        # Load FarMesh distributed model
         self.model = AutoDistributedModelForCausalLM.from_pretrained(
             model_id,
             torch_dtype=torch.float16,
@@ -267,7 +267,7 @@ class FarMeshCoordinator:
             # Track which nodes are serving which layers
             session.set_active_nodes(active_nodes)
 
-            # Generate with Petals
+            # Generate with FarMesh
             with torch.inference_mode():
                 for output in self.model.generate(
                     **inputs,
@@ -299,16 +299,16 @@ class FarMeshCoordinator:
 
     def _get_contributing_nodes(self) -> list[str]:
         """
-        Query Petals to see which nodes handled the last forward pass.
+        Query FarMesh to see which nodes handled the last forward pass.
         Returns list of node IDs.
         """
-        # Petals tracks this internally via transformer_blocks
+        # FarMesh tracks this internally via transformer_blocks
         # We'll expose it via custom hooks
         return self.model.get_last_contributing_servers()
 ```
 
 **Dependencies**:
-- `petals==2.3.0`
+- `farmesh==2.3.0`
 - `transformers==4.38.0`
 - `torch==2.2.0`
 
@@ -662,14 +662,14 @@ async def get_active_nodes(model_id: str, location: Optional[str] = None):
 #!/usr/bin/env python3
 """
 Far Node Server - Runs on GPU provider machines.
-Serves model layers via Petals and reports to discovery service.
+Serves model layers via FarMesh and reports to discovery service.
 """
 
 import asyncio
 import argparse
-from petals.server.from_pretrained import load_pretrained_block
-from petals.server import run_server
-from petals.constants import PUBLIC_INITIAL_PEERS
+from farmesh.server.from_pretrained import load_pretrained_block
+from farmesh.server import run_server
+from farmesh.constants import PUBLIC_INITIAL_PEERS
 import httpx
 from datetime import datetime
 
@@ -707,13 +707,13 @@ class FarNodeServer:
         # Start heartbeat task
         heartbeat_task = asyncio.create_task(self.heartbeat_loop())
 
-        # Start Petals server
+        # Start FarMesh server
         await run_server(
             model_name_or_path=self.model_id,
             public_name=self.public_addr,
             device=f"cuda:{self.gpu_index}",
             torch_dtype="float16",
-            initial_peers=PUBLIC_INITIAL_PEERS,  # Connect to public Petals DHT
+            initial_peers=PUBLIC_INITIAL_PEERS,  # Connect to public FarMesh DHT
             throughput=1.0,
             num_blocks=None,  # Auto-determine based on available VRAM
             on_accept_request=self._on_request_accepted,
@@ -735,7 +735,7 @@ class FarNodeServer:
                 "node_id": self.node_id,
                 "wallet_address": self.wallet_address,
                 "model_id": self.model_id,
-                "layers_served": [],  # Will be populated by Petals
+                "layers_served": [],  # Will be populated by FarMesh
                 "gpu_model": gpu_name,
                 "vram_gb": int(vram_gb),
                 "location": "unknown",  # TODO: Detect via GeoIP
@@ -1501,7 +1501,7 @@ export default function ProviderDashboard() {
 ## 5. Phase 4: Advanced Features
 
 **Duration**: 6 weeks
-**Goal**: Feature parity with Petals + premium tiers
+**Goal**: Feature parity with FarMesh + premium tiers
 
 ### 5.1 Quantization Support (8-bit/4-bit)
 
@@ -2469,7 +2469,7 @@ groups:
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| Petals library bugs/limitations | High | Medium | Contribute fixes upstream, fork if needed |
+| FarMesh library bugs/limitations | High | Medium | Contribute fixes upstream, fork if needed |
 | Insufficient provider adoption | High | Medium | Incentive campaigns, lower barriers to entry |
 | Payment disputes | Medium | Low | Clear SLAs, automatic resolution via smart contracts |
 | Network attacks (DDoS) | High | Low | Rate limiting, DDoS protection (Cloudflare) |
@@ -2525,7 +2525,7 @@ groups:
 
 ### 17.2 References
 
-- [Petals GitHub](https://github.com/bigscience-workshop/petals)
+- [FarMesh GitHub](https://github.com/QuantumLabs-Git/farmesh)
 - [Hivemind Paper](https://arxiv.org/abs/2103.03239)
 - [BigScience Workshop](https://bigscience.huggingface.co/)
 - [Transformers Library](https://huggingface.co/docs/transformers)

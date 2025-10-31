@@ -11,7 +11,7 @@ This software turns your NVIDIA GPU into a node in the Far Labs mesh network, se
 ### What is a Far Node?
 
 A Far Node is a GPU server that:
-- Runs Petals software to serve transformer model layers
+- Runs FarMesh software to serve transformer model layers
 - Registers with Far Labs discovery service
 - Automatically participates in distributed inference requests
 - Earns $FAR tokens for compute contributions
@@ -113,11 +113,11 @@ Detecting hardware...
   CPU: 16 cores
   RAM: 28.3 GB / 32.0 GB available
 
-Starting Petals server for model: meta-llama/Llama-2-7b-chat-hf
+Starting FarMesh server for model: meta-llama/Llama-2-7b-chat-hf
   Serving 11 transformer blocks
   Precision: float16
   Port: 31330
-  ✓ Petals server started
+  ✓ FarMesh server started
   Node ID: QmYHnEQLdf...
 
 Registering with Far Labs discovery service...

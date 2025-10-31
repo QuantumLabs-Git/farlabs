@@ -1,6 +1,6 @@
 # Far Mesh Coordinator
 
-The Far Mesh Coordinator is the central service that connects users to the Far Labs distributed GPU mesh network. It wraps Petals/Hivemind distributed inference with payment tracking and marketplace features.
+The Far Mesh Coordinator is the central service that connects users to the Far Labs distributed GPU mesh network. It wraps FarMesh/Hivemind distributed inference with payment tracking and marketplace features.
 
 ## Overview
 
@@ -12,7 +12,7 @@ The Far Mesh Coordinator is the central service that connects users to the Far L
 - Streams tokens back to users as they're generated
 
 **Technology Stack:**
-- **Petals**: Open-source distributed inference engine (model parallelism)
+- **FarMesh**: Open-source distributed inference engine (model parallelism)
 - **Hivemind**: DHT-based peer discovery and coordination
 - **FastAPI**: HTTP API server
 - **PostgreSQL**: Usage tracking and payment records
@@ -34,11 +34,11 @@ The Far Mesh Coordinator is the central service that connects users to the Far L
 │              │                   │
 │  ┌───────────▼───────────────┐  │
 │  │  FarMeshCoordinator       │  │
-│  │  - Wraps Petals           │  │
+│  │  - Wraps FarMesh           │  │
 │  │  - Payment tracking       │  │
 │  └───────────┬───────────────┘  │
 └──────────────┼───────────────────┘
-               │ Petals Protocol
+               │ FarMesh Protocol
                ▼
      ┌──────────────────┐
      │   Far Mesh DHT   │
@@ -46,7 +46,7 @@ The Far Mesh Coordinator is the central service that connects users to the Far L
      └────┬────┬────┬───┘
           │    │    │
       ┌───▼┐ ┌─▼──┐ ┌▼───┐
-      │GPU1│ │GPU2│ │GPU3│  (Far Nodes running Petals servers)
+      │GPU1│ │GPU2│ │GPU3│  (Far Nodes running FarMesh servers)
       └────┘ └────┘ └────┘
 ```
 
@@ -198,7 +198,7 @@ This data is used by the Payment Tracker service to distribute earnings to GPU p
 ## Development Roadmap
 
 ### Phase 2 (Current)
-- ✅ Basic Petals integration
+- ✅ Basic FarMesh integration
 - ✅ Streaming inference API
 - 🔄 Node tracking (currently placeholder)
 - 🔄 Payment session management
@@ -224,7 +224,7 @@ This data is used by the Payment Tracker service to distribute earnings to GPU p
 - Verify network connectivity
 
 ### No active GPU nodes
-- Nodes must be running Petals servers for the same model
+- Nodes must be running FarMesh servers for the same model
 - Check node logs for errors
 - Verify nodes are connected to same DHT
 

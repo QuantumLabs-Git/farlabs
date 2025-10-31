@@ -2,18 +2,18 @@
 
 **Status**: Phase 2 - Core Services Implemented
 **Date**: October 10, 2025
-**Implementation Approach**: Petals/Hivemind with Far Labs Payment Layer
+**Implementation Approach**: FarMesh/Hivemind with Far Labs Payment Layer
 
 ---
 
 ## Executive Summary
 
-We've successfully implemented the foundation for Far Labs' distributed inference marketplace. The system uses **Petals** (open-source distributed inference) as the core technology, wrapped with Far Labs' payment tracking and marketplace features.
+We've successfully implemented the foundation for Far Labs' distributed inference marketplace. The system uses **FarMesh** (open-source distributed inference) as the core technology, wrapped with Far Labs' payment tracking and marketplace features.
 
 ### Key Accomplishment
 
 ✅ **Far Mesh Coordinator Service** - Production-ready distributed inference API that:
-- Connects to Petals mesh network (DHT-based GPU discovery)
+- Connects to FarMesh mesh network (DHT-based GPU discovery)
 - Routes inference requests across distributed GPU nodes
 - Streams tokens back to users in real-time
 - Tracks node contributions for $FAR token payments
@@ -22,7 +22,7 @@ We've successfully implemented the foundation for Far Labs' distributed inferenc
 ### What We Built
 
 1. **`backend/services/far_mesh_coordinator/`** - Complete microservice
-   - Petals wrapper with payment tracking
+   - FarMesh wrapper with payment tracking
    - FastAPI HTTP server with SSE streaming
    - Database schema for tracking sessions and payments
    - Docker container ready for deployment
@@ -65,11 +65,11 @@ We've successfully implemented the foundation for Far Labs' distributed inferenc
         │    │            │                     │
         │    │ ┌──────────▼──────────────────┐ │
         │    │ │ FarMeshCoordinator          │ │
-        │    │ │  - Wraps Petals             │ │
+        │    │ │  - Wraps FarMesh             │ │
         │    │ │  - Payment tracking         │ │
         │    │ └──────────┬──────────────────┘ │
         │    └────────────┼────────────────────┘
-        │                 │ Petals Protocol
+        │                 │ FarMesh Protocol
         │                 ▼
         │       ┌─────────────────┐
         │       │  Far Mesh DHT    │
@@ -78,7 +78,7 @@ We've successfully implemented the foundation for Far Labs' distributed inferenc
         │          │    │    │
         │      ┌───▼┐ ┌─▼──┐ ┌▼───┐
         │      │GPU1│ │GPU2│ │GPU3│  Far Nodes (GPU Providers)
-        │      └────┘ └────┘ └────┘  Running Petals Servers
+        │      └────┘ └────┘ └────┘  Running FarMesh Servers
         │
         ▼
   ┌────────────┐
@@ -110,9 +110,9 @@ POST /api/inference/chat
 
 The request is routed to the new Far Mesh Coordinator service at port 8100.
 
-### 3. Coordinator Initializes Petals Connection
+### 3. Coordinator Initializes FarMesh Connection
 
-On startup, the coordinator connects to the Petals DHT network:
+On startup, the coordinator connects to the FarMesh DHT network:
 
 ```python
 # coordinator.py
@@ -186,12 +186,12 @@ A separate payment service (to be implemented in Phase 3) reads the `far_session
 
 ## Key Technical Decisions
 
-### Why Petals/Hivemind?
+### Why FarMesh/Hivemind?
 
 **Option 1: Build from scratch** - 12-18 months, high risk, $2M+ cost
-**Option 2: Use Petals** ✅ - 20 weeks, proven technology, focus on marketplace
+**Option 2: Use FarMesh** ✅ - 20 weeks, proven technology, focus on marketplace
 
-**What Petals provides:**
+**What FarMesh provides:**
 - Battle-tested distributed inference engine
 - DHT-based peer discovery (no central coordinator needed)
 - Fault tolerance and auto-recovery
@@ -203,11 +203,11 @@ A separate payment service (to be implemented in Phase 3) reads the `far_session
 - $FAR token payment system
 - Marketplace features (provider discovery, ratings, pricing)
 - Better UX (SDKs, dashboard, onboarding)
-- Business model (Petals is free, we charge and pay providers)
+- Business model (FarMesh is free, we charge and pay providers)
 
 ### Honest Positioning
 
-**Internally**: We use Petals as a dependency, like using React or PyTorch
+**Internally**: We use FarMesh as a dependency, like using React or PyTorch
 **Publicly**: "Far Labs operates a distributed GPU marketplace powered by state-of-the-art model parallelism"
 
 ---
@@ -219,9 +219,9 @@ A separate payment service (to be implemented in Phase 3) reads the `far_session
 ```
 backend/services/far_mesh_coordinator/
 ├── __init__.py              # Package initialization
-├── coordinator.py           # FarMeshCoordinator (wraps Petals)
+├── coordinator.py           # FarMeshCoordinator (wraps FarMesh)
 ├── server.py                # FastAPI HTTP server
-├── requirements.txt         # Dependencies (includes Petals)
+├── requirements.txt         # Dependencies (includes FarMesh)
 ├── Dockerfile               # Container image
 ├── .env.example             # Configuration template
 └── README.md                # Service documentation
@@ -359,7 +359,7 @@ psql -h farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com \
 
 1. **Far Node Server** (GPU provider software)
    - Runs on provider's machine
-   - Starts Petals server
+   - Starts FarMesh server
    - Reports to Far Labs discovery service
    - Tracks own earnings
 
@@ -452,7 +452,7 @@ psql -h farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com \
 
 ## Technical Risks & Mitigations
 
-### Risk 1: Petals network stability
+### Risk 1: FarMesh network stability
 **Mitigation**: Fallback to centralized inference if mesh unavailable
 
 ### Risk 2: Payment tracking accuracy
@@ -474,7 +474,7 @@ psql -h farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com \
 - Database functions
 
 ### Integration Tests
-- Full inference flow with mock Petals network
+- Full inference flow with mock FarMesh network
 - Payment recording and distribution
 - Node heartbeat and discovery
 
@@ -484,7 +484,7 @@ psql -h farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com \
 - DHT network stability under load
 
 ### End-to-End Tests
-- Real Petals network on testnet
+- Real FarMesh network on testnet
 - Actual GPU providers
 - Full payment flow on testnet
 
@@ -492,25 +492,25 @@ psql -h farlabs-postgres-free.cc9c2a8ueo1d.us-east-1.rds.amazonaws.com \
 
 ## Questions & Answers
 
-### Q: Is this just Petals with a wrapper?
+### Q: Is this just FarMesh with a wrapper?
 **A**: In terms of distributed inference - yes. In terms of product - no.
-Petals is free and has no marketplace. Far Labs adds:
+FarMesh is free and has no marketplace. Far Labs adds:
 - Payment infrastructure
 - Provider marketplace
 - Enterprise features (SLAs, support, analytics)
 - Better UX (SDKs, dashboard)
 
 ### Q: Can we claim this as proprietary technology?
-**A**: The distributed inference engine is Petals (acknowledge in code).
+**A**: The distributed inference engine is FarMesh (acknowledge in code).
 The marketplace, payment system, and user experience are Far Labs proprietary.
 
-### Q: What happens if Petals stops working?
+### Q: What happens if FarMesh stops working?
 **A**: We can:
-1. Fork Petals and maintain ourselves
+1. Fork FarMesh and maintain ourselves
 2. Switch to alternative distributed inference (e.g., Alpa, DeepSpeed)
 3. Build our own (future Phase 6)
 
-For now, Petals is actively maintained and production-ready.
+For now, FarMesh is actively maintained and production-ready.
 
 ### Q: How do we verify nodes aren't cheating?
 **A**: Phase 4 feature - random output verification:
@@ -525,7 +525,7 @@ For now, Petals is actively maintained and production-ready.
 
 We've successfully implemented the core infrastructure for Far Labs distributed inference marketplace:
 
-✅ **Working Service**: Far Mesh Coordinator connects to Petals network
+✅ **Working Service**: Far Mesh Coordinator connects to FarMesh network
 ✅ **Payment Tracking**: Database schema records all contributions
 ✅ **Streaming API**: Tokens flow back to users in real-time
 ✅ **Production Ready**: Dockerized, documented, deployable
@@ -545,9 +545,9 @@ We've successfully implemented the core infrastructure for Far Labs distributed 
 - Service README: `backend/services/far_mesh_coordinator/README.md`
 - Terminology: `infra/DISTRIBUTED_INFERENCE_TERMINOLOGY.md`
 
-**Petals Resources**:
-- GitHub: https://github.com/bigscience-workshop/petals
-- Paper: "Petals: Collaborative Inference and Fine-tuning of Large Models"
+**FarMesh Resources**:
+- GitHub: https://github.com/QuantumLabs-Git/farmesh
+- Paper: "FarMesh: Collaborative Inference and Fine-tuning of Large Models"
 - Hivemind DHT: https://github.com/learning-at-home/hivemind
 
 **Questions**: Reach out to the platform architecture team

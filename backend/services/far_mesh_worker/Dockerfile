@@ -23,7 +23,7 @@ COPY .env.example .env.example
 # Create directory for model cache
 RUN mkdir -p /root/.cache/huggingface
 
-# Expose Petals P2P port
+# Expose FarMesh P2P port
 EXPOSE 31337
 
 # Run the worker

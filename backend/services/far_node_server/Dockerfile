@@ -29,7 +29,7 @@ COPY .env.example .env.example
 RUN mkdir -p /root/.cache/huggingface
 RUN mkdir -p /root/.cache/torch
 
-# Expose Petals P2P port (default)
+# Expose FarMesh P2P port (default)
 EXPOSE 31330
 
 # Health check - ensure process is running

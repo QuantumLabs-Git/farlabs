@@ -1,18 +1,18 @@
-# Far Labs GPU Mesh Worker (Petals Server)
+# Far Labs GPU Mesh Worker (FarMesh Server)
 
-This worker runs Petals server blocks that participate in the distributed Far Mesh network. GPU providers download and run this service to contribute their hardware to the distributed inference mesh.
+This worker runs FarMesh server blocks that participate in the distributed Far Mesh network. GPU providers download and run this service to contribute their hardware to the distributed inference mesh.
 
 ## Overview
 
 **What it does:**
-- Runs Petals server blocks hosting model layers
+- Runs FarMesh server blocks hosting model layers
 - Connects to the Far Labs DHT (Distributed Hash Table)
 - Serves inference requests routed through the mesh
 - Reports to the Far Mesh Coordinator for payment tracking
 - Maintains heartbeats for availability monitoring
 
 **Technology Stack:**
-- **Petals**: Open-source distributed inference engine
+- **FarMesh**: Open-source distributed inference engine
 - **Hivemind**: DHT-based peer discovery
 - **PyTorch**: Model inference engine
 - **pynvml**: GPU monitoring
@@ -25,7 +25,7 @@ This worker runs Petals server blocks that participate in the distributed Far Me
 │   (Routes user requests)         │
 └────────────┬─────────────────────┘
              │
-             │ Petals P2P Protocol
+             │ FarMesh P2P Protocol
              ▼
       ┌──────────────┐
       │  Far Mesh    │
@@ -105,7 +105,7 @@ Environment variables:
 - Announces available model blocks
 
 ### 2. Operation
-- Listens for inference requests via Petals P2P
+- Listens for inference requests via FarMesh P2P
 - Processes model layers assigned to this worker
 - Forwards activations to next worker in chain
 - Reports metrics via heartbeats

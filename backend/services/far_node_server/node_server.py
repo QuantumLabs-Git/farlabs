@@ -2,7 +2,7 @@
 Far Node Server
 
 Runs on GPU provider's machine to:
-1. Start Petals server serving model layers
+1. Start FarMesh server serving model layers
 2. Register with Far Labs discovery service
 3. Send heartbeats and metrics
 4. Track earnings
@@ -22,7 +22,7 @@ import torch
 import pynvml
 import psutil
 from pydantic import BaseModel
-from petals import server as petals_server
+from farmesh import server as farmesh_server
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,14 +61,14 @@ class HardwareInfo(BaseModel):
 
 class FarNodeServer:
     """
-    Far Node Server - runs Petals server and registers with Far Labs.
+    Far Node Server - runs FarMesh server and registers with Far Labs.
     """
 
     def __init__(self, config: NodeConfig):
         self.config = config
         self.node_id: Optional[str] = None
         self.hardware_info: Optional[HardwareInfo] = None
-        self.petals_server: Optional[petals_server.Server] = None
+        self.farmesh_server: Optional[farmesh_server.Server] = None
         self.running = False
         self.total_tokens_served = 0
         self.total_earned_far = Decimal("0")
@@ -87,9 +87,9 @@ class FarNodeServer:
         self.hardware_info = self._detect_hardware()
         self._log_hardware_info()
 
-        # 2. Start Petals server
-        logger.info(f"\nStarting Petals server for model: {self.config.model_id}")
-        await self._start_petals_server()
+        # 2. Start FarMesh server
+        logger.info(f"\nStarting FarMesh server for model: {self.config.model_id}")
+        await self._start_farmesh_server()
 
         # 3. Register with Far Labs discovery service
         logger.info("\nRegistering with Far Labs discovery service...")
@@ -153,8 +153,8 @@ class FarNodeServer:
         logger.info(f"  CPU: {hw.cpu_cores} cores")
         logger.info(f"  RAM: {hw.ram_available_gb:.1f} GB / {hw.ram_total_gb:.1f} GB available")
 
-    async def _start_petals_server(self):
-        """Start Petals server in the background"""
+    async def _start_farmesh_server(self):
+        """Start FarMesh server in the background"""
 
         # Determine how many transformer blocks to serve based on VRAM
         if self.config.num_blocks is None:
@@ -183,12 +183,12 @@ class FarNodeServer:
         if self.config.dht_bootstrap_addr:
             initial_peers = [self.config.dht_bootstrap_addr]
 
-        # Start Petals server (runs in background threads)
-        # Note: Petals server.run() is blocking, so we'd need to run it in a separate process
+        # Start FarMesh server (runs in background threads)
+        # Note: FarMesh server.run() is blocking, so we'd need to run it in a separate process
         # For now, we'll use server.Server() which allows more control
 
         try:
-            self.petals_server = petals_server.Server(
+            self.farmesh_server = farmesh_server.Server(
                 model_name_or_path=self.config.model_id,
                 num_blocks=num_blocks,
                 torch_dtype=torch_dtype,
@@ -202,18 +202,18 @@ class FarNodeServer:
             # Get the node ID (DHT peer ID)
             await asyncio.sleep(2)  # Give it time to start
 
-            # Extract node ID from Petals DHT
-            if hasattr(self.petals_server, 'dht') and self.petals_server.dht:
-                self.node_id = str(self.petals_server.dht.peer_id)
+            # Extract node ID from FarMesh DHT
+            if hasattr(self.farmesh_server, 'dht') and self.farmesh_server.dht:
+                self.node_id = str(self.farmesh_server.dht.peer_id)
             else:
                 # Fallback: use wallet address as node ID
                 self.node_id = f"far_node_{self.config.wallet_address[:16]}"
 
-            logger.info(f"  ✓ Petals server started")
+            logger.info(f"  ✓ FarMesh server started")
             logger.info(f"  Node ID: {self.node_id}")
 
         except Exception as e:
-            logger.error(f"Failed to start Petals server: {e}")
+            logger.error(f"Failed to start FarMesh server: {e}")
             raise
 
     async def _register_with_discovery(self):
@@ -329,13 +329,13 @@ class FarNodeServer:
         except Exception as e:
             logger.warning(f"Failed to unregister: {e}")
 
-        # Shutdown Petals server
-        if self.petals_server:
+        # Shutdown FarMesh server
+        if self.farmesh_server:
             try:
-                self.petals_server.shutdown()
-                logger.info("✓ Petals server stopped")
+                self.farmesh_server.shutdown()
+                logger.info("✓ FarMesh server stopped")
             except Exception as e:
-                logger.warning(f"Failed to stop Petals server: {e}")
+                logger.warning(f"Failed to stop FarMesh server: {e}")
 
         # Close HTTP client
         await self.http_client.aclose()

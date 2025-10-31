@@ -62,7 +62,7 @@ curl -s http://farlabs-alb-free-1564980524.us-east-1.elb.amazonaws.com/api/auth/
   - ⏳ ECR push pending
   - ⏳ ECS service creation pending
 
-**Purpose**: Coordinates distributed LLM inference across GPU provider network using Petals
+**Purpose**: Coordinates distributed LLM inference across GPU provider network using FarMesh
 
 **Endpoints** (when deployed):
 - `POST /inference/generate` - Streaming distributed inference
@@ -216,7 +216,7 @@ DATABASE_URL=postgresql://farlabs_admin:FarLabs2025SecurePass!@farlabs-postgres-
 
 # Far Mesh Coordinator
 MODEL_ID=meta-llama/Llama-2-7b-chat-hf
-DHT_BOOTSTRAP_ADDR=/ip4/petals.dev/tcp/31337
+DHT_BOOTSTRAP_ADDR=/ip4/farmesh.dev/tcp/31337
 PRICE_PER_TOKEN_FAR=0.0001
 COORDINATOR_PORT=8003
 
@@ -237,7 +237,7 @@ FAR_TOKEN_ADDRESS=0x... # TBD
 ## Known Issues & Limitations
 
 ### Current Limitations
-1. **No DHT Bootstrap Node**: Using Petals public bootstrap temporarily
+1. **No DHT Bootstrap Node**: Using FarMesh public bootstrap temporarily
 2. **Discovery Service Missing**: Nodes can't register yet
 3. **No Payment System**: Provider earnings not tracked/paid
 4. **Single Region**: All in us-east-1 (expand later)

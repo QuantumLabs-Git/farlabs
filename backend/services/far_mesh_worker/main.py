@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Far Labs GPU Mesh Worker - Petals Server
+Far Labs GPU Mesh Worker - FarMesh Server
 
-This worker runs Petals server blocks that participate in the distributed
+This worker runs FarMesh server blocks that participate in the distributed
 Far Mesh network for decentralized AI inference.
 
 Supports: NVIDIA GPUs (CUDA) and Apple Silicon (M1/M2/M3 via MPS)
@@ -53,7 +53,7 @@ def detect_device() -> tuple[str, str]:
 
 
 class FarMeshWorker:
-    """Far Labs Petals server worker"""
+    """Far Labs FarMesh server worker"""
 
     def __init__(self):
         # Detect device
@@ -228,18 +228,18 @@ class FarMeshWorker:
             await self.send_heartbeat()
             await asyncio.sleep(self.heartbeat_interval)
 
-    def start_petals_server(self):
-        """Start the Petals server"""
-        logger.info("Starting Petals server...")
+    def start_farmesh_server(self):
+        """Start the FarMesh server"""
+        logger.info("Starting FarMesh server...")
         logger.info(f"Model: {self.model_name}")
         logger.info(f"Device: {self.device_type}")
         logger.info(f"DHT: {self.dht_bootstrap}")
 
         try:
-            # Import Petals here to fail fast if not installed
-            from petals import ServerConfig, run_server
+            # Import FarMesh here to fail fast if not installed
+            from farmesh import ServerConfig, run_server
 
-            # Configure Petals server with device-specific settings
+            # Configure FarMesh server with device-specific settings
             config = ServerConfig(
                 model_name=self.model_name,
                 dht_prefix=f"farlabs_{self.model_name}",  # Namespace for Far Labs
@@ -250,7 +250,7 @@ class FarMeshWorker:
                 use_auth_token=None  # Public models only for now
             )
 
-            # Set device for Petals
+            # Set device for FarMesh
             if self.device_type == "mps":
                 # Apple Silicon: Use MPS backend
                 config.device = "mps"
@@ -268,7 +268,7 @@ class FarMeshWorker:
             if self.num_blocks:
                 config.num_blocks = int(self.num_blocks)
 
-            logger.info("✓ Petals configuration ready")
+            logger.info("✓ FarMesh configuration ready")
             logger.info("Connecting to DHT and downloading model weights...")
 
             if self.device_type == "mps":
@@ -280,10 +280,10 @@ class FarMeshWorker:
             run_server(config)
 
         except ImportError:
-            logger.error("Petals not installed. Please install with: pip install petals")
+            logger.error("FarMesh not installed. Please install with: pip install farmesh")
             raise
         except Exception as e:
-            logger.error(f"Failed to start Petals server: {e}")
+            logger.error(f"Failed to start FarMesh server: {e}")
             raise
 
     async def run(self):
@@ -302,9 +302,9 @@ class FarMeshWorker:
             logger.info(f"✓ Node ID: {self.node_id}")
             logger.info("━" * 60)
 
-            # Start Petals server (blocking - runs in main thread)
+            # Start FarMesh server (blocking - runs in main thread)
             # This will keep the worker running until interrupted
-            await asyncio.to_thread(self.start_petals_server)
+            await asyncio.to_thread(self.start_farmesh_server)
 
         except KeyboardInterrupt:
             logger.info("\n Shutting down gracefully...")
@@ -318,7 +318,7 @@ class FarMeshWorker:
 def main():
     """Entry point"""
     logger.info("=" * 60)
-    logger.info("Far Labs GPU Mesh Worker (Petals Server)")
+    logger.info("Far Labs GPU Mesh Worker (FarMesh Server)")
     logger.info("=" * 60)
 
     # Display device compatibility info

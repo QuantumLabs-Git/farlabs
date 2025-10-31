@@ -1,9 +1,9 @@
 """
 Far Mesh Coordinator
 
-Wraps Petals distributed inference with Far Labs payment tracking.
+Wraps FarMesh distributed inference with Far Labs payment tracking.
 This is the core service that:
-1. Loads models using Petals (distributed across GPU providers)
+1. Loads models using FarMesh (distributed across GPU providers)
 2. Tracks which nodes contribute to each inference session
 3. Records usage for payment distribution
 """
@@ -17,14 +17,14 @@ import uuid
 import os
 import torch
 import asyncpg
-from petals import AutoDistributedModelForCausalLM
+from farmesh import AutoDistributedModelForCausalLM
 from transformers import AutoTokenizer
 from pydantic import BaseModel
 try:
-    from petals import DistributedBloomForCausalLM
-    PETALS_FINETUNING_AVAILABLE = True
+    from farmesh import DistributedBloomForCausalLM
+    FARMESH_FINETUNING_AVAILABLE = True
 except ImportError:
-    PETALS_FINETUNING_AVAILABLE = False
+    FARMESH_FINETUNING_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -86,10 +86,10 @@ class FineTuningStatus(BaseModel):
 
 class FarMeshCoordinator:
     """
-    Coordinates distributed inference using Petals with payment tracking.
+    Coordinates distributed inference using FarMesh with payment tracking.
 
     This service:
-    - Connects to the Petals swarm (DHT-based mesh network)
+    - Connects to the FarMesh swarm (DHT-based mesh network)
     - Routes inference requests through distributed GPU nodes
     - Tracks which nodes contribute to each session
     - Records usage metrics for payment distribution
@@ -128,7 +128,7 @@ class FarMeshCoordinator:
 
     async def initialize(self):
         """
-        Initialize the Petals distributed model connection.
+        Initialize the FarMesh distributed model connection.
 
         This connects to the DHT network and discovers available GPU nodes
         serving the specified model.
@@ -154,12 +154,12 @@ class FarMeshCoordinator:
             # Load tokenizer (lightweight, runs locally)
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
 
-            # Set initial_peers for Petals DHT
-            # If no bootstrap address is provided, use a placeholder to satisfy Petals requirements
-            # Petals will create its own standalone DHT if peers list is provided but empty/invalid
+            # Set initial_peers for FarMesh DHT
+            # If no bootstrap address is provided, use a placeholder to satisfy FarMesh requirements
+            # FarMesh will create its own standalone DHT if peers list is provided but empty/invalid
             initial_peers = [self.dht_bootstrap_addr] if self.dht_bootstrap_addr else [""]
 
-            # Connect to Petals swarm
+            # Connect to FarMesh swarm
             # This will automatically discover and connect to GPU nodes
             # serving this model in the DHT network
             self.model = AutoDistributedModelForCausalLM.from_pretrained(
@@ -185,7 +185,7 @@ class FarMeshCoordinator:
         This method:
         1. Starts a payment tracking session
         2. Tokenizes the prompt
-        3. Generates tokens using Petals (distributed across GPU nodes)
+        3. Generates tokens using FarMesh (distributed across GPU nodes)
         4. Streams each token back to the user
         5. Tracks usage for payment
 
@@ -218,7 +218,7 @@ class FarMeshCoordinator:
             logger.info(f"  Prompt length: {input_ids.shape[1]} tokens")
             logger.info(f"  Max new tokens: {request.max_tokens}")
 
-            # Generate tokens using Petals distributed inference
+            # Generate tokens using FarMesh distributed inference
             # The model is split across multiple GPU nodes
             # Activations are forwarded through the mesh network
             with torch.inference_mode():
@@ -242,7 +242,7 @@ class FarMeshCoordinator:
                     session["cost_far"] += token_cost
 
                     # Track which nodes contributed with layer counts
-                    # This accesses Petals RemoteSequential to get layer-to-peer mapping
+                    # This accesses FarMesh RemoteSequential to get layer-to-peer mapping
                     contributing_nodes = self._get_contributing_nodes()
 
                     # Accumulate layer counts for each node across all tokens
@@ -278,13 +278,13 @@ class FarMeshCoordinator:
         """
         Get count of active GPU nodes serving this model.
 
-        This queries the Petals DHT to see how many nodes are online.
+        This queries the FarMesh DHT to see how many nodes are online.
         """
         try:
             if self.model and hasattr(self.model, 'dht'):
-                # Access Petals DHT to get node count
+                # Access FarMesh DHT to get node count
                 # This is a simplified implementation
-                # Real implementation would query Petals internals
+                # Real implementation would query FarMesh internals
                 return len(self.model.dht.get_visible_peers())
         except:
             pass
@@ -295,7 +295,7 @@ class FarMeshCoordinator:
         Get map of GPU nodes that contributed to the current inference step
         with their layer counts.
 
-        This accesses Petals internal routing information to identify which
+        This accesses FarMesh internal routing information to identify which
         peers handled layers in the distributed inference.
 
         Returns:
@@ -541,12 +541,12 @@ class FarMeshCoordinator:
             Initial status of the fine-tuning job
 
         Note:
-            Fine-tuning requires Petals v2.0+ with training support
+            Fine-tuning requires FarMesh v2.0+ with training support
         """
-        if not PETALS_FINETUNING_AVAILABLE:
+        if not FARMESH_FINETUNING_AVAILABLE:
             raise RuntimeError(
-                "Fine-tuning is not available. Please ensure you have Petals v2.0+ installed "
-                "with training dependencies: pip install petals[training]"
+                "Fine-tuning is not available. Please ensure you have FarMesh v2.0+ installed "
+                "with training dependencies: pip install farmesh[training]"
             )
 
         job_id = request.request_id
@@ -558,7 +558,7 @@ class FarMeshCoordinator:
         logger.info(f"  Learning rate: {request.learning_rate}")
 
         try:
-            # TODO: Implement actual Petals fine-tuning logic
+            # TODO: Implement actual FarMesh fine-tuning logic
             # This would include:
             # 1. Load model with training mode enabled
             # 2. Load and prepare dataset
@@ -649,7 +649,7 @@ class FarMeshCoordinator:
             "active_sessions": len(self.active_sessions),
             "price_per_token_far": str(self.price_per_token_far),
             "status": "connected" if self.model else "disconnected",
-            "fine_tuning_available": PETALS_FINETUNING_AVAILABLE
+            "fine_tuning_available": FARMESH_FINETUNING_AVAILABLE
         }
 
     async def shutdown(self):
@@ -666,9 +666,9 @@ class FarMeshCoordinator:
             await self.db_pool.close()
             logger.info("✓ Database pool closed")
 
-        # Close Petals connection
+        # Close FarMesh connection
         if self.model:
-            # Petals doesn't have explicit close, but we can clear references
+            # FarMesh doesn't have explicit close, but we can clear references
             self.model = None
             self.tokenizer = None
 

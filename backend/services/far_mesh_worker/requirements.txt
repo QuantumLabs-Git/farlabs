@@ -1,6 +1,6 @@
 # Core dependencies for distributed inference
-# Petals 2.3.0+ with MPS (Apple Silicon) support
-git+https://github.com/bigscience-workshop/petals.git@main
+# FarMesh 2.3.0+ with MPS (Apple Silicon) support
+git+https://github.com/QuantumLabs-Git/farmesh.git@main
 hivemind>=1.1.10
 transformers>=4.43.0
 accelerate>=0.28.0

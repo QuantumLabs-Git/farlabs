@@ -2,8 +2,8 @@
 # This runs on user's machines with NVIDIA GPUs
 
 # Core dependencies for distributed inference
-# Note: Petals requires exact versions to avoid conflicts
-git+https://github.com/bigscience-workshop/petals.git@main
+# Note: FarMesh requires exact versions to avoid conflicts
+git+https://github.com/QuantumLabs-Git/farmesh.git@main
 hivemind>=1.1.10
 transformers>=4.43.0
 torch>=2.3.0

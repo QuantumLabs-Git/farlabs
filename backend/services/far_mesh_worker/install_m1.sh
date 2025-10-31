@@ -68,7 +68,7 @@ echo ""
 
 # Install other dependencies
 echo "Installing Far Labs dependencies..."
-pip install git+https://github.com/bigscience-workshop/petals.git@main
+pip install git+https://github.com/bigscience-workshop/farmesh.git@main
 pip install hivemind>=1.1.10
 pip install transformers>=4.43.0
 pip install accelerate>=0.28.0

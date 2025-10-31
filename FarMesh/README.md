@@ -1,15 +1,15 @@
 # FarMesh - Far Labs Distributed Inference Library
 
-**FarMesh** is Far Labs' fork and modernization of the [Petals](https://github.com/bigscience-workshop/petals) distributed transformer inference library.
+**FarMesh** is Far Labs' fork and modernization of the [FarMesh](https://github.com/QuantumLabs-Git/farmesh) distributed transformer inference library.
 
 ## Why FarMesh?
 
-The original Petals library (last updated 2023) has dependency conflicts with modern Python packages:
+The original FarMesh library (last updated 2023) has dependency conflicts with modern Python packages:
 - Uses `transformers==4.34.1` (we need `>=4.39.0`)
 - Incompatible with `pydantic>=2.0` (required by modern FastAPI)
 - Old versions of web3, eth-account, and other dependencies
 
-FarMesh updates Petals to work with:
+FarMesh updates FarMesh to work with:
 - ✅ Pydantic v2 (>=2.6.0)
 - ✅ Modern transformers (>=4.39.0)
 - ✅ Latest PyTorch versions
@@ -20,11 +20,11 @@ FarMesh updates Petals to work with:
 ```
 ┌────────────────────────────────────────────────────────┐
 │                   FarMesh Library                       │
-│  (Wrapper + Updates to Petals for modern dependencies) │
+│  (Wrapper + Updates to FarMesh for modern dependencies) │
 └────────────────────────────────────────────────────────┘
                           │
                           ├─ API Layer (Far Labs branding)
-                          ├─ Updated Petals core (modern deps)
+                          ├─ Updated FarMesh core (modern deps)
                           └─ Hivemind DHT integration
 ```
 
@@ -43,7 +43,7 @@ from farmesh import DistributedInferenceClient
 
 client = DistributedInferenceClient(
     model_id="meta-llama/Llama-2-7b-chat-hf",
-    dht_bootstrap="/ip4/petals.dev/tcp/31337"
+    dht_bootstrap="/ip4/farmesh.dev/tcp/31337"
 )
 
 # Generate text
@@ -61,20 +61,20 @@ from farmesh import FarNode
 
 node = FarNode(
     model_id="meta-llama/Llama-2-7b-chat-hf",
-    dht_bootstrap="/ip4/petals.dev/tcp/31337",
+    dht_bootstrap="/ip4/farmesh.dev/tcp/31337",
     device="cuda:0"
 )
 
 node.run()  # Start serving model layers
 ```
 
-## Key Differences from Petals
+## Key Differences from FarMesh
 
-| Petals | FarMesh |
+| FarMesh | FarMesh |
 |--------|---------|
-| `petals.RemoteSequential` | `farmesh.DistributedModel` |
+| `farmesh.RemoteSequential` | `farmesh.DistributedModel` |
 | `run_server()` | `FarNode.run()` |
-| `petals.AutoDistributedModelForCausalLM` | `farmesh.DistributedInferenceClient` |
+| `farmesh.AutoDistributedModelForCausalLM` | `farmesh.DistributedInferenceClient` |
 | transformers 4.34.1 | transformers >= 4.39.0 |
 | No pydantic support | Pydantic v2 compatible |
 
@@ -112,18 +112,18 @@ pip install dist/farmesh-*.whl
 
 ## Terminology Mapping
 
-| Concept | Petals Term | FarMesh Term |
+| Concept | FarMesh Term | FarMesh Term |
 |---------|------------|--------------|
-| Distributed network | "Petals Swarm" | "Far Mesh Network" |
+| Distributed network | "FarMesh Swarm" | "Far Mesh Network" |
 | GPU provider | "Server" | "Far Node" |
 | Model layers | "Blocks" | "Layers" (unchanged) |
 | Network discovery | "DHT" | "DHT" (unchanged) |
 
 ## License
 
-MIT License (inherited from Petals)
+MIT License (inherited from FarMesh)
 
 ## Credits
 
-FarMesh is based on [Petals](https://github.com/bigscience-workshop/petals) by BigScience Workshop.
+FarMesh is based on [FarMesh](https://github.com/QuantumLabs-Git/farmesh) by BigScience Workshop.
 Updated and maintained by Far Labs for modern dependency compatibility.

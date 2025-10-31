@@ -14,7 +14,7 @@ I've begun implementing the distributed inference system (Far Mesh) as outlined 
 ## ✅ Completed Tasks
 
 ### 1. Code Implementation (Previous Session)
-- ✅ Far Mesh Coordinator service (wraps Petals with payment tracking)
+- ✅ Far Mesh Coordinator service (wraps FarMesh with payment tracking)
 - ✅ Far Node Server (GPU provider software)
 - ✅ Database schema (004_distributed_inference.sql)
 - ✅ Comprehensive documentation (README files, action plan)
@@ -45,7 +45,7 @@ I've begun implementing the distributed inference system (Far Mesh) as outlined 
 **Status**: Building Docker image
 **Instance**: EC2 farlabs-frontend-builder (18.232.57.77)
 **Base Image**: Python 3.11-slim
-**Dependencies**: Petals, FastAPI, PyTorch
+**Dependencies**: FarMesh, FastAPI, PyTorch
 **Estimated Time**: 5-10 minutes remaining
 
 ### Inference Service Build (from previous session)
@@ -128,7 +128,7 @@ The next critical component for GPU providers to register and be discovered.
            └─────────────────┘ └────────────┘  └───────┬───────┘
                                                         │
                                                ┌────────▼────────┐
-                                               │  Petals DHT     │
+                                               │  FarMesh DHT     │
                                                │  Swarm Network  │
                                                └────────┬────────┘
                                                         │
@@ -157,7 +157,7 @@ The next critical component for GPU providers to register and be discovered.
 
 **What it does**:
 - Receives inference requests from users
-- Connects to Petals distributed network (DHT)
+- Connects to FarMesh distributed network (DHT)
 - Discovers available GPU nodes serving model layers
 - Coordinates multi-GPU distributed inference
 - Tracks which nodes contributed how many tokens
@@ -165,7 +165,7 @@ The next critical component for GPU providers to register and be discovered.
 - Stores session data in PostgreSQL
 
 **Key Technology**:
-- **Petals**: Open-source distributed transformer inference
+- **FarMesh**: Open-source distributed transformer inference
 - **Hivemind DHT**: Peer discovery protocol
 - **FastAPI**: HTTP API with Server-Sent Events (SSE) streaming
 - **PostgreSQL**: Session and payment tracking
@@ -181,7 +181,7 @@ The next critical component for GPU providers to register and be discovered.
 ### Current Risks
 
 1. **No DHT Bootstrap Node**
-   - **Mitigation**: Using Petals public bootstrap (`/ip4/petals.dev/tcp/31337`)
+   - **Mitigation**: Using FarMesh public bootstrap (`/ip4/farmesh.dev/tcp/31337`)
    - **Long-term**: Deploy our own bootstrap node
 
 2. **Discovery Service Missing**
@@ -215,7 +215,7 @@ aws ecs update-service --cluster farlabs-cluster-free \
 
 - [ ] Far Mesh Coordinator deployed and healthy
 - [ ] Database migration successful
-- [ ] Can query Petals network and discover nodes
+- [ ] Can query FarMesh network and discover nodes
 - [ ] End-to-end inference request works
 - [ ] Session tracking in database confirmed
 
@@ -224,8 +224,8 @@ aws ecs update-service --cluster farlabs-cluster-free \
 ## Questions & Decisions Needed
 
 ### 1. DHT Bootstrap Node
-**Question**: Deploy our own Hivemind bootstrap node or use Petals public?
-**Recommendation**: Use Petals public for MVP, deploy own later
+**Question**: Deploy our own Hivemind bootstrap node or use FarMesh public?
+**Recommendation**: Use FarMesh public for MVP, deploy own later
 
 ### 2. Discovery Service Priority
 **Question**: Build Discovery Service next or test current system first?
