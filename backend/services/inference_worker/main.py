@@ -10,6 +10,8 @@ import asyncio
 import json
 import os
 import random
+import uuid
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 import redis.asyncio as redis  # type: ignore[import-untyped]
@@ -17,6 +19,15 @@ import redis.asyncio as redis  # type: ignore[import-untyped]
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 QUEUE_KEY = "inference_queue"
 TASK_CHANNEL_TEMPLATE = "task:{task_id}"
+GPU_NODE_REGISTRY_KEY = "gpu:nodes"
+GPU_OWNER_INDEX_PREFIX = "gpu:owner:"
+
+# Worker configuration
+WORKER_WALLET = os.getenv("WORKER_WALLET_ADDRESS", "0x0000000000000000000000000000000000000000")
+WORKER_GPU_MODEL = os.getenv("WORKER_GPU_MODEL", "AWS-Simulated-GPU")
+WORKER_VRAM_GB = int(os.getenv("WORKER_VRAM_GB", "24"))
+WORKER_LOCATION = os.getenv("WORKER_LOCATION", "aws-ecs")
+NODE_ID = os.getenv("NODE_ID") or f"node_{uuid.uuid4().hex[:10]}"
 
 
 async def simulate_inference(task: Dict[str, Any]) -> Dict[str, Any]:
@@ -47,6 +58,75 @@ async def publish_progress(client: redis.Redis, task_id: str, payload: Dict[str,
     await client.publish(channel, json.dumps(payload))
 
 
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+async def register_gpu_node(client: redis.Redis) -> None:
+    """Register this worker as an available GPU node in Redis."""
+    # Determine supported models based on VRAM
+    model_registry = {
+        "distilgpt2": 1,
+        "gpt2": 2,
+        "gpt2-medium": 4,
+        "tinyllama": 4,
+        "phi-2": 8,
+        "llama-7b": 16,
+        "llama-70b": 140,
+        "mixtral-8x22b": 180,
+        "llama-405b": 810,
+    }
+
+    supported_models = [
+        model_id for model_id, required_vram in model_registry.items()
+        if WORKER_VRAM_GB >= required_vram
+    ]
+
+    node_record = {
+        "wallet_address": WORKER_WALLET.lower(),
+        "gpu_model": WORKER_GPU_MODEL,
+        "vram_gb": WORKER_VRAM_GB,
+        "bandwidth_gbps": 10.0,
+        "location": WORKER_LOCATION,
+        "notes": f"Auto-registered worker {NODE_ID}",
+        "status": "available",
+        "score": 100.0,
+        "tasks_completed": 0,
+        "uptime_seconds": 0,
+        "supported_models": supported_models,
+        "registered_at": utc_now_iso(),
+        "last_heartbeat": utc_now_iso(),
+    }
+
+    # Store in GPU node registry
+    await client.hset(GPU_NODE_REGISTRY_KEY, NODE_ID, json.dumps(node_record))
+
+    # Add to owner index
+    owner_key = f"{GPU_OWNER_INDEX_PREFIX}{WORKER_WALLET.lower()}"
+    await client.sadd(owner_key, NODE_ID)
+
+    print(f"✓ Registered GPU node: {NODE_ID}")
+    print(f"  GPU: {WORKER_GPU_MODEL} ({WORKER_VRAM_GB}GB VRAM)")
+    print(f"  Supported models: {len(supported_models)} models")
+
+
+async def heartbeat_loop(client: redis.Redis) -> None:
+    """Periodically update heartbeat to keep node marked as available."""
+    while True:
+        try:
+            await asyncio.sleep(30)  # Heartbeat every 30 seconds
+
+            # Update last_heartbeat timestamp
+            node_data = await client.hget(GPU_NODE_REGISTRY_KEY, NODE_ID)
+            if node_data:
+                node_record = json.loads(node_data)
+                node_record["last_heartbeat"] = utc_now_iso()
+                node_record["status"] = "available"
+                await client.hset(GPU_NODE_REGISTRY_KEY, NODE_ID, json.dumps(node_record))
+        except Exception as e:
+            print(f"Heartbeat error: {e}")
+
+
 async def handle_task(client: redis.Redis, task: Dict[str, Any]) -> None:
     task_id = task.get("task_id")
     if not task_id:
@@ -70,23 +150,51 @@ async def handle_task(client: redis.Redis, task: Dict[str, Any]) -> None:
     await publish_progress(client, task_id, result)
 
 
+async def task_processor(client: redis.Redis) -> None:
+    """Main loop that processes inference tasks from the queue."""
+    while True:
+        try:
+            _, raw = await client.brpop(QUEUE_KEY)
+        except (redis.ConnectionError, redis.TimeoutError):
+            await asyncio.sleep(1)
+            continue
+
+        try:
+            task = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+
+        await handle_task(client, task)
+
+
 async def worker() -> None:
+    """Main worker entry point - registers node and processes tasks."""
     client = redis.from_url(REDIS_URL, decode_responses=True)
     try:
-        while True:
-            try:
-                _, raw = await client.brpop(QUEUE_KEY)
-            except (redis.ConnectionError, redis.TimeoutError):
-                await asyncio.sleep(1)
-                continue
+        print("=" * 50)
+        print("Far Labs Inference Worker Starting...")
+        print("=" * 50)
 
-            try:
-                task = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
+        # Register this worker as a GPU node
+        await register_gpu_node(client)
 
-            await handle_task(client, task)
+        # Start heartbeat and task processing in parallel
+        print("✓ Starting task processor and heartbeat...")
+        await asyncio.gather(
+            task_processor(client),
+            heartbeat_loop(client)
+        )
     finally:
+        # Mark node as unavailable before shutting down
+        try:
+            node_data = await client.hget(GPU_NODE_REGISTRY_KEY, NODE_ID)
+            if node_data:
+                node_record = json.loads(node_data)
+                node_record["status"] = "offline"
+                await client.hset(GPU_NODE_REGISTRY_KEY, NODE_ID, json.dumps(node_record))
+                print(f"✓ Marked node {NODE_ID} as offline")
+        except Exception:
+            pass
         await client.close()
 
 
