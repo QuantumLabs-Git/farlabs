@@ -13,7 +13,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
-from .coordinator import (
+from coordinator import (
     FarMeshCoordinator,
     InferenceRequest,
     TokenResponse,
