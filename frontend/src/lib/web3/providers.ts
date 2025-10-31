@@ -1,10 +1,12 @@
 import { http, cookieStorage, createStorage } from 'wagmi';
-import { bsc } from 'wagmi/chains';
+import { bsc, mainnet, polygon, arbitrum, optimism, base } from 'wagmi/chains';
 import { createConfig } from 'wagmi';
 import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors';
 
-const defaultChain = bsc;
-const defaultRpc = process.env.NEXT_PUBLIC_BSC_RPC ?? defaultChain.rpcUrls.default.http[0]!;
+// Support multiple chains for better wallet compatibility
+const supportedChains = [mainnet, bsc, polygon, arbitrum, optimism, base] as const;
+const defaultChain = mainnet; // Changed to Ethereum mainnet as most users default to this
+const bscRpc = process.env.NEXT_PUBLIC_BSC_RPC ?? bsc.rpcUrls.default.http[0]!;
 
 // Build connectors array conditionally based on available config
 const connectors = [
@@ -33,13 +35,18 @@ if (walletConnectProjectId && walletConnectProjectId.length > 10) {
 }
 
 export const wagmiConfig = createConfig({
-  chains: [defaultChain],
+  chains: supportedChains,
   connectors,
   ssr: true,
   storage: createStorage({
     storage: cookieStorage
   }),
   transports: {
-    [defaultChain.id]: http(defaultRpc)
+    [mainnet.id]: http(),
+    [bsc.id]: http(bscRpc),
+    [polygon.id]: http(),
+    [arbitrum.id]: http(),
+    [optimism.id]: http(),
+    [base.id]: http()
   }
 });
