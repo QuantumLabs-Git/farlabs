@@ -64,11 +64,12 @@ jobs:
             dockerfile: backend/services/websocket/Dockerfile
             repository: farlabs-websocket
             ecs_service: farlabs-websocket
-          - id: staking
-            context: backend
-            dockerfile: backend/services/staking/Dockerfile
-            repository: farlabs-staking-free
-            ecs_service: farlabs-staking-free
+          # Staking service temporarily disabled - needs to be created in Terraform first
+          # - id: staking
+          #   context: backend
+          #   dockerfile: backend/services/staking/Dockerfile
+          #   repository: farlabs-staking-free
+          #   ecs_service: farlabs-staking-free
           - id: payments
             context: backend
             dockerfile: backend/services/payments/Dockerfile
