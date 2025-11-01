@@ -59,12 +59,13 @@ async def lifespan(app: FastAPI):
         await coordinator.shutdown()
 
 
-# Create FastAPI app
+# Create FastAPI app with /api prefix
 app = FastAPI(
     title="Far Mesh Coordinator",
     description="Distributed inference API powered by Far Labs mesh network",
     version="0.1.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    root_path="/api"
 )
 
 # Add CORS middleware
