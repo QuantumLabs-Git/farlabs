@@ -128,12 +128,12 @@ class FarMeshCoordinator:
 
     async def initialize(self):
         """
-        Initialize the FarMesh distributed model connection.
+        Initialize the coordinator (PostgreSQL only).
 
-        This connects to the DHT network and discovers available GPU nodes
-        serving the specified model.
+        FarMesh model loading is deferred until first inference request
+        to avoid blocking startup when no GPU nodes are available.
         """
-        logger.info(f"Loading distributed model: {self.model_id}")
+        logger.info(f"Initializing coordinator infrastructure")
 
         try:
             # Connect to PostgreSQL database
@@ -150,7 +150,24 @@ class FarMeshCoordinator:
                 command_timeout=60
             )
             logger.info("✓ PostgreSQL connected")
+            logger.info("✓ Coordinator ready (FarMesh will load on first inference request)")
 
+        except Exception as e:
+            logger.error(f"Failed to initialize coordinator: {e}")
+            raise
+
+    async def _ensure_model_loaded(self):
+        """
+        Lazy-load the FarMesh model on first use.
+
+        This prevents blocking startup when no GPU nodes are available.
+        """
+        if self.model is not None:
+            return  # Already loaded
+
+        logger.info(f"Loading distributed model: {self.model_id}")
+
+        try:
             # Load tokenizer (lightweight, runs locally)
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
 
@@ -172,7 +189,7 @@ class FarMeshCoordinator:
             logger.info(f"  Active GPU nodes: {self._get_active_nodes_count()}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize Far Mesh connection: {e}")
+            logger.error(f"Failed to load FarMesh model: {e}")
             raise
 
     async def generate_streaming(
@@ -196,6 +213,9 @@ class FarMeshCoordinator:
             TokenResponse objects with each generated token
         """
         session_id = request.request_id
+
+        # Lazy-load FarMesh model if not already loaded
+        await self._ensure_model_loaded()
 
         # Start tracking session
         session = {
